@@ -5,7 +5,11 @@
     "moduleResolution": "NodeNext",
     "strict": true,
     "declaration": true,
-    "outDir": "dist"
+    "skipLibCheck": true,
+    "ignoreDeprecations": "6.0"
   },
-  "exclude": ["**/dist/**", "**/node_modules/**"]
+  "exclude": [
+    "**/dist/**",
+    "**/node_modules/**"
+  ]
 }
