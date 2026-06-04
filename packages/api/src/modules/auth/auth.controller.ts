@@ -15,8 +15,13 @@ export class AuthController {
     request: FastifyRequest<{ Body: SignUpBodyType }>,
     reply: FastifyReply,
   ) => {
-    const { email, password } = request.body;
-    const result = await this.service.signup(email, password);
+    const { email, password, firstName, lastName } = request.body;
+    const result = await this.service.signup(
+      email,
+      firstName,
+      lastName,
+      password,
+    );
 
     return reply.status(201).send(ok(result));
   };
@@ -24,6 +29,12 @@ export class AuthController {
   login = async (request: FastifyRequest<{ Body: LoginBodyType }>) => {
     const { email, password } = request.body;
     const result = await this.service.login(email, password);
+
+    return ok(result);
+  };
+
+  me = async (request: FastifyRequest) => {
+    const result = await this.service.me(request.user.sub);
 
     return ok(result);
   };

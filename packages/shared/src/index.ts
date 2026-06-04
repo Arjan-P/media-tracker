@@ -1,6 +1,6 @@
 // types
-export * from "./types/api.js";
-export * from "./types/user.js";
+export * from "./types/auth.type.js";
+export * from "./types/response.type.js";
 
 // schemas
 export * from "./schemas/response.schema.js";

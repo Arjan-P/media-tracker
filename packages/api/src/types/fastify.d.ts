@@ -1,7 +1,6 @@
 import "@fastify/jwt";
 import "fastify";
-
-import { User } from "@media-tracker/shared";
+import { JWTUser } from "./jwt.ts";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -11,8 +10,7 @@ declare module "fastify" {
 
 declare module "@fastify/jwt" {
   interface FastifyJWT {
-    payload: User;
-
-    user: User;
+    payload: JWTUser;
+    user: JWTUser;
   }
 }

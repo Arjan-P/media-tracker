@@ -1,10 +1,11 @@
-import { User } from "@media-tracker/shared";
 import bcrypt from "bcrypt";
 
 import type { FastifyInstance } from "fastify";
 
 import { AuthRepository } from "./auth.repository.js";
 import { AuthenticationError, ConflictError } from "../../errors/index.js";
+import { UserRow } from "../../db/rows.js";
+import { AuthResponse, MeResponse } from "@media-tracker/shared";
 
 export class AuthService {
   private readonly repo: AuthRepository;
@@ -13,10 +14,27 @@ export class AuthService {
     this.repo = new AuthRepository(app.pg);
   }
 
+  private signAccessToken(user: UserRow) {
+    return this.app.jwt.sign(
+      {
+        sub: user.id,
+        email: user.email,
+
+        firstName: user.first_name,
+        lastName: user.last_name,
+      },
+      {
+        expiresIn: "15m",
+      },
+    );
+  }
+
   async signup(
     email: string,
+    firstName: string,
+    lastName: string,
     password: string,
-  ): Promise<{ user: User; accessToken: string }> {
+  ): Promise<AuthResponse> {
     const existing = await this.repo.findByEmail(email);
 
     if (existing) {
@@ -25,12 +43,9 @@ export class AuthService {
 
     const hash = await bcrypt.hash(password, 12);
 
-    const user = await this.repo.createUser(email, hash);
+    const user = await this.repo.createUser(email, firstName, lastName, hash);
 
-    const token = this.app.jwt.sign({
-      userId: user.id,
-      email: user.email,
-    });
+    const token = this.signAccessToken(user);
 
     return {
       user: {
@@ -41,10 +56,7 @@ export class AuthService {
     };
   }
 
-  async login(
-    email: string,
-    password: string,
-  ): Promise<{ user: User; accessToken: string }> {
+  async login(email: string, password: string): Promise<AuthResponse> {
     const user = await this.repo.findByEmail(email);
 
     if (!user) {
@@ -57,10 +69,7 @@ export class AuthService {
       throw new AuthenticationError("Invalid credentials");
     }
 
-    const token = this.app.jwt.sign({
-      userId: user.id,
-      email: user.email,
-    });
+    const token = this.signAccessToken(user);
 
     return {
       user: {
@@ -68,6 +77,23 @@ export class AuthService {
         email: user.email,
       },
       accessToken: token,
+    };
+  }
+
+  async me(userId: string): Promise<MeResponse> {
+    const user = await this.repo.findById(userId);
+
+    if (!user) {
+      throw new AuthenticationError();
+    }
+
+    return {
+      user: {
+        userId: user.id,
+        email: user.email,
+        firstName: user.first_name,
+        lastName: user.last_name,
+      },
     };
   }
 }

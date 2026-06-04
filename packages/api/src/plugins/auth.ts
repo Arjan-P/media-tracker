@@ -2,7 +2,7 @@ import fp from "fastify-plugin";
 import fastifyJwt from "@fastify/jwt";
 
 import { env } from "../configs/env/env.js";
-import { AuthenticationError } from "../errors/http.errors.js";
+import { AuthenticationError } from "../errors/index.js";
 
 export const authPlugin = fp(async (app) => {
   await app.register(fastifyJwt, {

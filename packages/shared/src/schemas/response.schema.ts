@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ERROR_CODES } from "../types/api.js";
+import { ERROR_CODES } from "../types/response.type.js";
 
 /**
  * Generic success response
