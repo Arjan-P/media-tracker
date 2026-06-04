@@ -1,0 +1,1388 @@
+
+*** src: directory ***
+
+
+*** src/components: directory ***
+
+
+*** src/components/ui: directory ***
+
+::::::::::::::
+src/components/ui/input.tsx
+::::::::::::::
+import * as React from "react"
+
+import { cn } from "@/lib/utils"
+
+function Input({ className, type, ...props }: React.ComponentProps<"input">) {
+  return (
+    <input
+      type={type}
+      data-slot="input"
+      className={cn(
+        "h-8 w-full min-w-0 rounded-none border border-input bg-transparent px-2.5 py-1 text-xs transition-colors outline-none file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-xs file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-1 aria-invalid:ring-destructive/20 md:text-xs dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export { Input }
+::::::::::::::
+src/components/ui/label.tsx
+::::::::::::::
+import * as React from "react"
+import { Label as LabelPrimitive } from "radix-ui"
+
+import { cn } from "@/lib/utils"
+
+function Label({
+  className,
+  ...props
+}: React.ComponentProps<typeof LabelPrimitive.Root>) {
+  return (
+    <LabelPrimitive.Root
+      data-slot="label"
+      className={cn(
+        "flex items-center gap-2 text-xs leading-none select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export { Label }
+::::::::::::::
+src/components/ui/button.tsx
+::::::::::::::
+import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
+import { Slot } from "radix-ui"
+
+import { cn } from "@/lib/utils"
+
+const buttonVariants = cva(
+  "group/button inline-flex shrink-0 items-center justify-center rounded-none border border-transparent bg-clip-padding text-xs font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-1 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground hover:bg-primary/80",
+        outline:
+          "border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
+        secondary:
+          "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
+        ghost:
+          "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
+        destructive:
+          "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
+        link: "text-primary underline-offset-4 hover:underline",
+      },
+      size: {
+        default:
+          "h-8 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
+        xs: "h-6 gap-1 rounded-none px-2 text-xs has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
+        sm: "h-7 gap-1 rounded-none px-2.5 has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3.5",
+        lg: "h-9 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
+        icon: "size-8",
+        "icon-xs": "size-6 rounded-none [&_svg:not([class*='size-'])]:size-3",
+        "icon-sm": "size-7 rounded-none",
+        "icon-lg": "size-9",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+)
+
+function Button({
+  className,
+  variant = "default",
+  size = "default",
+  asChild = false,
+  ...props
+}: React.ComponentProps<"button"> &
+  VariantProps<typeof buttonVariants> & {
+    asChild?: boolean
+  }) {
+  const Comp = asChild ? Slot.Root : "button"
+
+  return (
+    <Comp
+      data-slot="button"
+      data-variant={variant}
+      data-size={size}
+      className={cn(buttonVariants({ variant, size, className }))}
+      {...props}
+    />
+  )
+}
+
+export { Button, buttonVariants }
+::::::::::::::
+src/components/ui/field.tsx
+::::::::::::::
+import { useMemo } from "react"
+import { cva, type VariantProps } from "class-variance-authority"
+
+import { cn } from "@/lib/utils"
+import { Label } from "@/components/ui/label"
+import { Separator } from "@/components/ui/separator"
+
+function FieldSet({ className, ...props }: React.ComponentProps<"fieldset">) {
+  return (
+    <fieldset
+      data-slot="field-set"
+      className={cn(
+        "flex flex-col gap-4 has-[>[data-slot=checkbox-group]]:gap-3 has-[>[data-slot=radio-group]]:gap-3",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function FieldLegend({
+  className,
+  variant = "legend",
+  ...props
+}: React.ComponentProps<"legend"> & { variant?: "legend" | "label" }) {
+  return (
+    <legend
+      data-slot="field-legend"
+      data-variant={variant}
+      className={cn(
+        "mb-2.5 font-medium data-[variant=label]:text-xs data-[variant=legend]:text-sm",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function FieldGroup({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="field-group"
+      className={cn(
+        "group/field-group @container/field-group flex w-full flex-col gap-5 data-[slot=checkbox-group]:gap-3 *:data-[slot=field-group]:gap-4",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+const fieldVariants = cva(
+  "group/field flex w-full gap-2 data-[invalid=true]:text-destructive",
+  {
+    variants: {
+      orientation: {
+        vertical: "flex-col *:w-full [&>.sr-only]:w-auto",
+        horizontal:
+          "flex-row items-center has-[>[data-slot=field-content]]:items-start *:data-[slot=field-label]:flex-auto has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px",
+        responsive:
+          "flex-col *:w-full @md/field-group:flex-row @md/field-group:items-center @md/field-group:*:w-auto @md/field-group:has-[>[data-slot=field-content]]:items-start @md/field-group:*:data-[slot=field-label]:flex-auto [&>.sr-only]:w-auto @md/field-group:has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px",
+      },
+    },
+    defaultVariants: {
+      orientation: "vertical",
+    },
+  }
+)
+
+function Field({
+  className,
+  orientation = "vertical",
+  ...props
+}: React.ComponentProps<"div"> & VariantProps<typeof fieldVariants>) {
+  return (
+    <div
+      role="group"
+      data-slot="field"
+      data-orientation={orientation}
+      className={cn(fieldVariants({ orientation }), className)}
+      {...props}
+    />
+  )
+}
+
+function FieldContent({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="field-content"
+      className={cn(
+        "group/field-content flex flex-1 flex-col gap-0.5 leading-snug",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function FieldLabel({
+  className,
+  ...props
+}: React.ComponentProps<typeof Label>) {
+  return (
+    <Label
+      data-slot="field-label"
+      className={cn(
+        "group/field-label peer/field-label flex w-fit gap-2 leading-snug group-data-[disabled=true]/field:opacity-50 has-data-checked:border-primary/30 has-data-checked:bg-primary/5 has-[>[data-slot=field]]:rounded-none has-[>[data-slot=field]]:border *:data-[slot=field]:p-2 dark:has-data-checked:border-primary/20 dark:has-data-checked:bg-primary/10",
+        "has-[>[data-slot=field]]:w-full has-[>[data-slot=field]]:flex-col",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function FieldTitle({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="field-label"
+      className={cn(
+        "flex w-fit items-center gap-2 text-xs/relaxed group-data-[disabled=true]/field:opacity-50",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function FieldDescription({ className, ...props }: React.ComponentProps<"p">) {
+  return (
+    <p
+      data-slot="field-description"
+      className={cn(
+        "text-left text-xs/relaxed leading-normal font-normal text-muted-foreground group-has-data-horizontal/field:text-balance [[data-variant=legend]+&]:-mt-1.5",
+        "last:mt-0 nth-last-2:-mt-1",
+        "[&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function FieldSeparator({
+  children,
+  className,
+  ...props
+}: React.ComponentProps<"div"> & {
+  children?: React.ReactNode
+}) {
+  return (
+    <div
+      data-slot="field-separator"
+      data-content={!!children}
+      className={cn(
+        "relative -my-2 h-5 text-xs group-data-[variant=outline]/field-group:-mb-2",
+        className
+      )}
+      {...props}
+    >
+      <Separator className="absolute inset-0 top-1/2" />
+      {children && (
+        <span
+          className="relative mx-auto block w-fit bg-background px-2 text-muted-foreground"
+          data-slot="field-separator-content"
+        >
+          {children}
+        </span>
+      )}
+    </div>
+  )
+}
+
+function FieldError({
+  className,
+  children,
+  errors,
+  ...props
+}: React.ComponentProps<"div"> & {
+  errors?: Array<{ message?: string } | undefined>
+}) {
+  const content = useMemo(() => {
+    if (children) {
+      return children
+    }
+
+    if (!errors?.length) {
+      return null
+    }
+
+    const uniqueErrors = [
+      ...new Map(errors.map((error) => [error?.message, error])).values(),
+    ]
+
+    if (uniqueErrors?.length == 1) {
+      return uniqueErrors[0]?.message
+    }
+
+    return (
+      <ul className="ml-4 flex list-disc flex-col gap-1">
+        {uniqueErrors.map(
+          (error, index) =>
+            error?.message && <li key={index}>{error.message}</li>
+        )}
+      </ul>
+    )
+  }, [children, errors])
+
+  if (!content) {
+    return null
+  }
+
+  return (
+    <div
+      role="alert"
+      data-slot="field-error"
+      className={cn("text-xs font-normal text-destructive", className)}
+      {...props}
+    >
+      {content}
+    </div>
+  )
+}
+
+export {
+  Field,
+  FieldLabel,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLegend,
+  FieldSeparator,
+  FieldSet,
+  FieldContent,
+  FieldTitle,
+}
+::::::::::::::
+src/components/ui/card.tsx
+::::::::::::::
+import * as React from "react"
+
+import { cn } from "@/lib/utils"
+
+function Card({
+  className,
+  size = "default",
+  ...props
+}: React.ComponentProps<"div"> & { size?: "default" | "sm" }) {
+  return (
+    <div
+      data-slot="card"
+      data-size={size}
+      className={cn(
+        "group/card flex flex-col gap-4 overflow-hidden rounded-none bg-card py-4 text-xs/relaxed text-card-foreground ring-1 ring-foreground/10 has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:gap-2 data-[size=sm]:py-3 data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-none *:[img:last-child]:rounded-none",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-header"
+      className={cn(
+        "group/card-header @container/card-header grid auto-rows-min items-start gap-1 rounded-none px-4 group-data-[size=sm]/card:px-3 has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto] [.border-b]:pb-4 group-data-[size=sm]/card:[.border-b]:pb-3",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-title"
+      className={cn(
+        "font-heading text-sm font-medium group-data-[size=sm]/card:text-sm",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-description"
+      className={cn("text-xs/relaxed text-muted-foreground", className)}
+      {...props}
+    />
+  )
+}
+
+function CardAction({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-action"
+      className={cn(
+        "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function CardContent({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-content"
+      className={cn("px-4 group-data-[size=sm]/card:px-3", className)}
+      {...props}
+    />
+  )
+}
+
+function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-footer"
+      className={cn(
+        "flex items-center rounded-none border-t p-4 group-data-[size=sm]/card:p-3",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export {
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardAction,
+  CardDescription,
+  CardContent,
+}
+::::::::::::::
+src/components/ui/separator.tsx
+::::::::::::::
+"use client"
+
+import * as React from "react"
+import { Separator as SeparatorPrimitive } from "radix-ui"
+
+import { cn } from "@/lib/utils"
+
+function Separator({
+  className,
+  orientation = "horizontal",
+  decorative = true,
+  ...props
+}: React.ComponentProps<typeof SeparatorPrimitive.Root>) {
+  return (
+    <SeparatorPrimitive.Root
+      data-slot="separator"
+      decorative={decorative}
+      orientation={orientation}
+      className={cn(
+        "shrink-0 bg-border data-horizontal:h-px data-horizontal:w-full data-vertical:w-px data-vertical:self-stretch",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export { Separator }
+
+*** src/app: directory ***
+
+::::::::::::::
+src/app/main.tsx
+::::::::::::::
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { App } from "./App";
+import "@/styles/index.css";
+
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);
+
+*** src/app/router: directory ***
+
+::::::::::::::
+src/app/router/router.tsx
+::::::::::::::
+import { createBrowserRouter, Navigate } from "react-router-dom";
+
+import { RootLayout } from "../layouts/RootLayout";
+import { PublicLayout } from "../layouts/PublicLayout";
+import { LoginPage, SignupPage } from "@/features/auth";
+
+export const ROUTES = {
+  HOME: "/",
+  LOGIN: "/login",
+  SIGNUP: "/signup",
+  DASHBOARD: "/dashboard",
+} as const;
+
+export const router = createBrowserRouter([
+  {
+    path: ROUTES.HOME,
+    element: <RootLayout />,
+    children: [
+      {
+        element: <PublicLayout />,
+        children: [
+          {
+            index: true,
+            element: <Navigate to={ROUTES.LOGIN} replace />,
+          },
+          {
+            path: ROUTES.LOGIN.slice(1),
+            element: <LoginPage />,
+          },
+          {
+            path: ROUTES.SIGNUP.slice(1),
+            element: <SignupPage />,
+          },
+        ],
+      },
+    ],
+  },
+]);
+
+*** src/app/layouts: directory ***
+
+::::::::::::::
+src/app/layouts/PublicLayout.tsx
+::::::::::::::
+import { Outlet } from "react-router-dom";
+
+export function PublicLayout() {
+  return (
+    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
+      <div className="w-full max-w-sm">
+        <Outlet />
+      </div>
+    </div>
+  );
+}
+::::::::::::::
+src/app/layouts/RootLayout.tsx
+::::::::::::::
+import { Outlet } from "react-router-dom";
+
+export function RootLayout() {
+  return <Outlet />;
+}
+
+*** src/app/providers: directory ***
+
+::::::::::::::
+src/app/providers/query-provider.tsx
+::::::::::::::
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactNode, useState } from "react";
+
+export function QueryProvider({ children }: { children: ReactNode }) {
+  const [client] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          // TODO: skip retry on failed auth
+          queries: {
+            staleTime: 1000 * 30,
+            refetchOnWindowFocus: false,
+          },
+        },
+      }),
+  );
+
+  return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
+}
+::::::::::::::
+src/app/App.tsx
+::::::::::::::
+import { RouterProvider } from "react-router-dom";
+import { router } from "./router/router";
+
+export function App() {
+  return <RouterProvider router={router} />;
+}
+
+*** src/lib: directory ***
+
+::::::::::::::
+src/lib/api.ts
+::::::::::::::
+import { useAuthStore } from "@/features/auth";
+import { errorResponse } from "@media-tracker/shared";
+import axios, { AxiosError } from "axios";
+
+export const api = axios.create({
+  baseURL: import.meta.env.VITE_BACKEND_URL,
+});
+
+api.interceptors.request.use((config) => {
+  const token = useAuthStore.getState().accessToken;
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
+api.interceptors.response.use(
+  // success handler
+  (res) => res,
+  // error handler
+  (error: AxiosError) => {
+    const parsed = errorResponse.safeParse(error.response?.data);
+    if (parsed.success) {
+      return Promise.reject(parsed.data.error);
+    }
+    return Promise.reject({ code: "UNKNOWN", message: "Something went wrong" });
+  },
+);
+::::::::::::::
+src/lib/utils.ts
+::::::::::::::
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+
+*** src/features: directory ***
+
+
+*** src/features/auth: directory ***
+
+
+*** src/features/auth/components: directory ***
+
+::::::::::::::
+src/features/auth/components/LoginForm.tsx
+::::::::::::::
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Link } from "react-router-dom";
+import { ROUTES } from "@/app/router/router";
+
+interface LoginFormProps {
+  className?: string;
+  loading?: boolean;
+  onSubmit: (data: { email: string; password: string }) => void;
+}
+
+export function LoginForm({ className, loading, onSubmit }: LoginFormProps) {
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+
+    onSubmit({
+      email: formData.get("email") as string,
+      password: formData.get("password") as string,
+    });
+  }
+
+  return (
+    <div className={cn("flex flex-col gap-6", className)}>
+      <Card>
+        <CardHeader>
+          <CardTitle>Login to your account</CardTitle>
+          <CardDescription>
+            Enter your email below to login to your account
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent>
+          <form onSubmit={handleSubmit}>
+            <FieldGroup>
+              <Field>
+                <FieldLabel htmlFor="email">Email</FieldLabel>
+
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="m@example.com"
+                  required
+                />
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor="password">Password</FieldLabel>
+
+                <Input id="password" name="password" type="password" required />
+              </Field>
+
+              <Field>
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? "Logging in..." : "Login"}
+                </Button>
+
+                <FieldDescription className="text-center">
+                  Don't have an account?{" "}
+                  <Link
+                    to={ROUTES.SIGNUP}
+                    className="underline underline-offset-4"
+                  >
+                    Sign up
+                  </Link>
+                </FieldDescription>
+              </Field>
+            </FieldGroup>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+::::::::::::::
+src/features/auth/components/SignupForm.tsx
+::::::::::::::
+// src/features/auth/components/SignupForm.tsx
+
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Link } from "react-router-dom";
+import { ROUTES } from "@/app/router/router";
+
+interface SignupFormProps {
+  loading?: boolean;
+  onSubmit: (data: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+  }) => void;
+}
+
+export function SignupForm({ loading, onSubmit }: SignupFormProps) {
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+
+    onSubmit({
+      firstName: formData.get("firstName") as string,
+      lastName: formData.get("lastName") as string,
+      email: formData.get("email") as string,
+      password: formData.get("password") as string,
+      confirmPassword: formData.get("confirmPassword") as string,
+    });
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Create an account</CardTitle>
+        <CardDescription>
+          Enter your information below to create your account
+        </CardDescription>
+      </CardHeader>
+
+      <CardContent>
+        <form onSubmit={handleSubmit}>
+          <FieldGroup>
+            <Field>
+              <FieldLabel htmlFor="firstName">First Name</FieldLabel>
+
+              <Input
+                id="firstName"
+                name="firstName"
+                placeholder="John"
+                required
+              />
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor="lastName">Last Name</FieldLabel>
+
+              <Input id="lastName" name="lastName" placeholder="Doe" required />
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor="email">Email</FieldLabel>
+
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="m@example.com"
+                required
+              />
+
+              <FieldDescription>
+                We'll use this to contact you.
+              </FieldDescription>
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor="password">Password</FieldLabel>
+
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                minLength={8}
+                required
+              />
+
+              <FieldDescription>
+                Must be at least 8 characters long.
+              </FieldDescription>
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor="confirmPassword">
+                Confirm Password
+              </FieldLabel>
+
+              <Input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                required
+              />
+            </Field>
+
+            <Field>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Creating account..." : "Create Account"}
+              </Button>
+
+              <FieldDescription className="text-center">
+                Already have an account?{" "}
+                <Link
+                  to={ROUTES.LOGIN}
+                  className="underline underline-offset-4"
+                >
+                  Sign in
+                </Link>
+              </FieldDescription>
+            </Field>
+          </FieldGroup>
+        </form>
+      </CardContent>
+    </Card>
+  );
+}
+::::::::::::::
+src/features/auth/index.ts
+::::::::::::::
+// store
+export * from "./store/auth.store";
+
+// hooks
+
+// components
+export * from "./pages/LoginPage";
+export * from "./pages/SignupPage";
+
+*** src/features/auth/hooks: directory ***
+
+::::::::::::::
+src/features/auth/hooks/useLogin.ts
+::::::::::::::
+import { useMutation } from "@tanstack/react-query";
+import { login } from "../api/auth.api";
+import { useAuthStore } from "../store/auth.store";
+
+export function useLogin() {
+  const setAuth = useAuthStore((s) => s.setAuth);
+
+  return useMutation({
+    mutationFn: ({ email, password }: { email: string; password: string }) =>
+      login(email, password),
+    onSuccess: (data) => {
+      setAuth(data.user, data.accessToken);
+    },
+  });
+}
+::::::::::::::
+src/features/auth/hooks/useMe.ts
+::::::::::::::
+import { useQuery } from "@tanstack/react-query";
+import { me } from "../api/auth.api";
+import { useAuthStore } from "../store/auth.store";
+
+export const ME_QUERY_KEY = ["auth", "me"] as const;
+
+export function useMe() {
+  const accessToken = useAuthStore((s) => s.accessToken);
+
+  return useQuery({
+    queryKey: ME_QUERY_KEY,
+    queryFn: me,
+    enabled: !!accessToken,
+    retry: false,
+  });
+}
+::::::::::::::
+src/features/auth/hooks/useSignup.ts
+::::::::::::::
+import { useMutation } from "@tanstack/react-query";
+import { signup } from "../api/auth.api";
+import { useAuthStore } from "../store/auth.store";
+
+export function useSignup() {
+  const setAuth = useAuthStore((s) => s.setAuth);
+
+  return useMutation({
+    mutationFn: (data: {
+      email: string;
+      firstName: string;
+      lastName: string;
+      password: string;
+    }) => signup(data.email, data.firstName, data.lastName, data.password),
+    onSuccess: (data) => {
+      setAuth(data.user, data.accessToken);
+    },
+  });
+}
+
+*** src/features/auth/pages: directory ***
+
+::::::::::::::
+src/features/auth/pages/LoginPage.tsx
+::::::::::::::
+import { useNavigate } from "react-router-dom";
+
+import { ROUTES } from "@/app/router/router";
+import { LoginForm } from "../components/LoginForm";
+import { useLogin } from "../hooks/useLogin";
+
+export function LoginPage() {
+  const navigate = useNavigate();
+
+  const loginMutation = useLogin();
+
+  function handleLogin(data: { email: string; password: string }) {
+    loginMutation.mutate(data, {
+      onSuccess: () => {
+        navigate(ROUTES.DASHBOARD, { replace: true });
+      },
+    });
+  }
+
+  return <LoginForm loading={loginMutation.isPending} onSubmit={handleLogin} />;
+}
+::::::::::::::
+src/features/auth/pages/SignupPage.tsx
+::::::::::::::
+// src/features/auth/pages/SignupPage.tsx
+
+import { useNavigate } from "react-router-dom";
+
+import { ROUTES } from "@/app/router/router";
+import { SignupForm } from "../components/SignupForm";
+import { useSignup } from "../hooks/useSignup";
+
+export function SignupPage() {
+  const navigate = useNavigate();
+  const signupMutation = useSignup();
+
+  function handleSignup(data: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+  }) {
+    if (data.password !== data.confirmPassword) {
+      // show toast/form error
+      return;
+    }
+
+    signupMutation.mutate(
+      {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        password: data.password,
+      },
+      {
+        onSuccess: () => {
+          navigate(ROUTES.DASHBOARD, { replace: true });
+        },
+      },
+    );
+  }
+
+  return (
+    <SignupForm loading={signupMutation.isPending} onSubmit={handleSignup} />
+  );
+}
+
+*** src/features/auth/store: directory ***
+
+::::::::::::::
+src/features/auth/store/auth.store.ts
+::::::::::::::
+import { MeResponse } from "@media-tracker/shared";
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+
+type UserProfile = MeResponse["user"];
+
+interface AuthState {
+  user: UserProfile | null;
+  accessToken: string | null;
+}
+
+interface AuthActions {
+  setAuth: (user: UserProfile, token: string) => void;
+  logout: () => void;
+}
+
+export const useAuthStore = create<AuthState & AuthActions>()(
+  persist(
+    (set) => ({
+      user: null,
+      accessToken: null,
+      setAuth: (user, token) => set({ user, accessToken: token }),
+      logout: () => set({ user: null, accessToken: null }),
+    }),
+    { name: "auth" },
+  ),
+);
+
+*** src/features/auth/api: directory ***
+
+::::::::::::::
+src/features/auth/api/auth.api.ts
+::::::::::::::
+import { api } from "@/lib/api";
+import {
+  AuthResponse,
+  MeResponse,
+  SuccessResponse,
+} from "@media-tracker/shared";
+
+export async function login(email: string, password: string) {
+  const res = await api.post<SuccessResponse<AuthResponse>>("/api/auth/login", {
+    email,
+    password,
+  });
+
+  return res.data.data;
+}
+
+export async function signup(
+  email: string,
+  firstName: string,
+  lastName: string,
+  password: string,
+) {
+  const res = await api.post<SuccessResponse<AuthResponse>>(
+    "/api/auth/signup",
+    {
+      email,
+      firstName,
+      lastName,
+      password,
+    },
+  );
+
+  return res.data.data;
+}
+
+export async function me() {
+  const res = await api.get<SuccessResponse<MeResponse>>("/api/auth/me");
+  return res.data.data;
+}
+
+*** src/styles: directory ***
+
+::::::::::::::
+src/styles/index.css
+::::::::::::::
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/jetbrains-mono";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+    --font-heading: var(--font-mono);
+    --font-sans: 'Geist Variable', sans-serif;
+    --color-sidebar-ring: var(--sidebar-ring);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar: var(--sidebar);
+    --color-chart-5: var(--chart-5);
+    --color-chart-4: var(--chart-4);
+    --color-chart-3: var(--chart-3);
+    --color-chart-2: var(--chart-2);
+    --color-chart-1: var(--chart-1);
+    --color-ring: var(--ring);
+    --color-input: var(--input);
+    --color-border: var(--border);
+    --color-destructive: var(--destructive);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent: var(--accent);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-muted: var(--muted);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-secondary: var(--secondary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary: var(--primary);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-popover: var(--popover);
+    --color-card-foreground: var(--card-foreground);
+    --color-card: var(--card);
+    --color-foreground: var(--foreground);
+    --color-background: var(--background);
+    --radius-sm: calc(var(--radius) * 0.6);
+    --radius-md: calc(var(--radius) * 0.8);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) * 1.4);
+    --radius-2xl: calc(var(--radius) * 1.8);
+    --radius-3xl: calc(var(--radius) * 2.2);
+    --radius-4xl: calc(var(--radius) * 2.6);
+    --font-mono: 'JetBrains Mono Variable', monospace;
+}
+
+:root {
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.145 0 0);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0 0);
+    --primary: oklch(0.205 0 0);
+    --primary-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.97 0 0);
+    --secondary-foreground: oklch(0.205 0 0);
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --accent: oklch(0.97 0 0);
+    --accent-foreground: oklch(0.205 0 0);
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: oklch(0.922 0 0);
+    --input: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+    --chart-1: oklch(0.87 0 0);
+    --chart-2: oklch(0.556 0 0);
+    --chart-3: oklch(0.439 0 0);
+    --chart-4: oklch(0.371 0 0);
+    --chart-5: oklch(0.269 0 0);
+    --radius: 0.625rem;
+    --sidebar: oklch(0.985 0 0);
+    --sidebar-foreground: oklch(0.145 0 0);
+    --sidebar-primary: oklch(0.205 0 0);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.97 0 0);
+    --sidebar-accent-foreground: oklch(0.205 0 0);
+    --sidebar-border: oklch(0.922 0 0);
+    --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+    --background: oklch(0.145 0 0);
+    --foreground: oklch(0.985 0 0);
+    --card: oklch(0.205 0 0);
+    --card-foreground: oklch(0.985 0 0);
+    --popover: oklch(0.205 0 0);
+    --popover-foreground: oklch(0.985 0 0);
+    --primary: oklch(0.922 0 0);
+    --primary-foreground: oklch(0.205 0 0);
+    --secondary: oklch(0.269 0 0);
+    --secondary-foreground: oklch(0.985 0 0);
+    --muted: oklch(0.269 0 0);
+    --muted-foreground: oklch(0.708 0 0);
+    --accent: oklch(0.269 0 0);
+    --accent-foreground: oklch(0.985 0 0);
+    --destructive: oklch(0.704 0.191 22.216);
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --ring: oklch(0.556 0 0);
+    --chart-1: oklch(0.87 0 0);
+    --chart-2: oklch(0.556 0 0);
+    --chart-3: oklch(0.439 0 0);
+    --chart-4: oklch(0.371 0 0);
+    --chart-5: oklch(0.269 0 0);
+    --sidebar: oklch(0.205 0 0);
+    --sidebar-foreground: oklch(0.985 0 0);
+    --sidebar-primary: oklch(0.488 0.243 264.376);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.269 0 0);
+    --sidebar-accent-foreground: oklch(0.985 0 0);
+    --sidebar-border: oklch(1 0 0 / 10%);
+    --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    }
+  body {
+    @apply bg-background text-foreground;
+    }
+  html {
+    @apply font-mono;
+    }
+}::::::::::::::
+components.json
+::::::::::::::
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "radix-lyra",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "src/styles/index.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "iconLibrary": "phosphor",
+  "rtl": false,
+  "aliases": {
+    "components": "@/components",
+    "utils": "@/lib/utils",
+    "ui": "@/components/ui",
+    "lib": "@/lib",
+    "hooks": "@/hooks"
+  },
+  "menuColor": "default",
+  "menuAccent": "subtle",
+  "registries": {}
+}
+::::::::::::::
+package.json
+::::::::::::::
+{
+  "name": "@media-tracker/web",
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -p tsconfig.json && vite build",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "clean": "rm -rf dist/"
+  },
+  "dependencies": {
+    "@fontsource-variable/geist": "^5.2.9",
+    "@fontsource-variable/jetbrains-mono": "^5.2.8",
+    "@media-tracker/shared": "workspace:*",
+    "@phosphor-icons/react": "^2.1.10",
+    "@tailwindcss/vite": "^4.3.0",
+    "@tanstack/react-query": "^5.101.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.17.0",
+    "radix-ui": "^1.4.3",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-router-dom": "^7.16.0",
+    "shadcn": "^4.10.0",
+    "tailwind-merge": "^3.6.0",
+    "tailwindcss": "^4.3.0",
+    "tslib": "^2.8.1",
+    "tw-animate-css": "^1.4.0",
+    "zustand": "^5.0.14"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.16",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.2",
+    "vite": "^8.0.16"
+  }
+}
+::::::::::::::
+tsconfig.json
+::::::::::::::
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "types": [
+      "vite/client"
+    ],
+    "jsx": "react-jsx",
+    "moduleResolution": "bundler",
+    "module": "ESNext",
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    }
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ]
+}::::::::::::::
+vite.config.ts
+::::::::::::::
+import path from "path";
+import tailwindcss from "@tailwindcss/vite";
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+});

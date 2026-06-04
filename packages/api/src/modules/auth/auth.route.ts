@@ -36,7 +36,7 @@ export async function authRoutes(fastify: FastifyInstance) {
         tags: ["Auth"],
         body: loginBodySchema,
         response: {
-          201: successResponse(authResponseSchema),
+          200: successResponse(authResponseSchema),
           ...commonErrorResponses,
         },
       },

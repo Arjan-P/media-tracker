@@ -13,7 +13,7 @@ export const userProfileSchema = z.object({
 });
 
 export const authResponseSchema = z.object({
-  user: z.object({ userId: z.string(), email: z.string() }),
+  user: userProfileSchema,
   accessToken: z.string(),
 });
 

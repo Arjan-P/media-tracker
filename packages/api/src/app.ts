@@ -1,5 +1,6 @@
 import Fastify, { type FastifyInstance } from "fastify";
 import { loggerConfig } from "./configs/logger.js";
+import { securityPlugin } from "./plugins/security.js";
 import { dbPlugin } from "./plugins/db.js";
 import { zodPlugin } from "./plugins/zod.js";
 import { openApiPlugin } from "./plugins/openapi.js";
@@ -12,6 +13,7 @@ export async function buildServer(): Promise<FastifyInstance> {
   const app = Fastify({ logger: loggerConfig });
 
   // register plugins
+  await app.register(securityPlugin);
   await app.register(dbPlugin);
   await app.register(zodPlugin);
   await app.register(openApiPlugin);

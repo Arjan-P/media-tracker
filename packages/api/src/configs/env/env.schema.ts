@@ -12,6 +12,7 @@ export const envSchema = z.object({
     .enum(["fatal", "error", "warn", "info", "debug", "trace"])
     .default("info"),
 
+  FRONTEND_URL: z.string(),
   DATABASE_URL: z.string(),
   JWT_SECRET: z.string(),
 });
