@@ -1,6 +1,15 @@
 import { z } from "zod";
 import { ERROR_CODES } from "../types/response.type.js";
 
+const paginationSchema = z.object({
+  page: z.number().int().positive(),
+  limit: z.number().int().positive(),
+  totalItems: z.number().int().nonnegative(),
+  totalPages: z.number().int().nonnegative(),
+  hasNextPage: z.boolean(),
+  hasPreviousPage: z.boolean(),
+});
+
 /**
  * Generic success response
  */
@@ -11,6 +20,7 @@ export const successResponse = <T extends z.ZodTypeAny>(dataSchema: T) =>
     meta: z
       .object({
         message: z.string().optional(),
+        pagination: paginationSchema.optional(),
       })
       .optional(),
   });

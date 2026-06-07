@@ -1,4 +1,4 @@
-type MediaType = "movie" | "tv" | "game" | "book" | "anime" | "manga";
+import type { MediaType } from "@media-tracker/shared";
 
 export interface UserRow {
   id: string;
