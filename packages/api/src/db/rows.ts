@@ -1,4 +1,4 @@
-import type { MediaType } from "@media-tracker/shared";
+import type { MediaProviderType, MediaType } from "@media-tracker/shared";
 
 export interface UserRow {
   id: string;
@@ -14,7 +14,7 @@ export interface UserRow {
 export interface MediaItemRow {
   id: string;
   providerId: string;
-  provider: string;
+  provider: MediaProviderType;
   type: MediaType;
   name: string;
   description: string | null;
