@@ -16,4 +16,6 @@ export const envSchema = z.object({
   DATABASE_URL: z.string(),
   JWT_SECRET: z.string(),
   TMDB_API_KEY: z.string(),
+  TWITCH_CLIENT_ID: z.string(),
+  TWITCH_CLIENT_SECRET: z.string(),
 });

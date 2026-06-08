@@ -11,10 +11,12 @@ import {
   TmdbTvProvider,
 } from "./providers/tmdb.provider.js";
 import { OpenLibraryProvider } from "./providers/openlibrary.provider.js";
+import { IgdbProvider } from "./providers/igdb.provider.js";
 
 const providerRegistry = new Map<MediaType, MediaProvider>([
   ["movie", new TmdbMovieProvider()],
   ["tv", new TmdbTvProvider()],
+  ["game", new IgdbProvider()],
   ["book", new OpenLibraryProvider()],
   ["anime", JikanAnimeProvider],
   ["manga", JikanMangaProvider],
