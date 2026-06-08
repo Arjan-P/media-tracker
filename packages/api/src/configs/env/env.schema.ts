@@ -15,4 +15,5 @@ export const envSchema = z.object({
   FRONTEND_URL: z.string(),
   DATABASE_URL: z.string(),
   JWT_SECRET: z.string(),
+  TMDB_API_KEY: z.string(),
 });

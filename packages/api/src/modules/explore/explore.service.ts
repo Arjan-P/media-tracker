@@ -6,8 +6,14 @@ import {
 } from "./providers/jikan.provider.js";
 import { NotFoundError, BadRequestError } from "../../errors/http.errors.js";
 import type { SearchQueryType } from "./explore.schema.js";
+import {
+  TmdbMovieProvider,
+  TmdbTvProvider,
+} from "./providers/tmdb.provider.js";
 
 const providerRegistry = new Map<MediaType, MediaProvider>([
+  ["movie", new TmdbMovieProvider()],
+  ["tv", new TmdbTvProvider()],
   ["anime", JikanAnimeProvider],
   ["manga", JikanMangaProvider],
 ]);
