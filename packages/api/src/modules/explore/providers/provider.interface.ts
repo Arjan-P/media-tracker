@@ -1,4 +1,8 @@
-import type { MediaItem, MediaType } from "@media-tracker/shared";
+import type {
+  MediaItem,
+  MediaProviderType,
+  MediaType,
+} from "@media-tracker/shared";
 
 export interface SearchParams {
   query: string;
@@ -13,6 +17,7 @@ export interface ProviderResult {
 }
 
 export interface MediaProvider {
+  readonly provider: MediaProviderType;
   readonly type: MediaType;
   search(params: SearchParams): Promise<ProviderResult>;
   getById(providerId: string): Promise<MediaItem | null>;

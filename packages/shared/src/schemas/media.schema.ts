@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+export const MediaProvider = z.enum(["tmdb", "igdb", "openlibrary", "jikan"]);
+
 export const MediaTypeSchema = z.enum([
   "movie",
   "tv",
@@ -10,7 +12,8 @@ export const MediaTypeSchema = z.enum([
 ]);
 
 export const MediaItemSchema = z.object({
-  id: z.string(),
+  provider: MediaProvider,
+  providerId: z.string(),
   type: MediaTypeSchema,
   name: z.string(),
 

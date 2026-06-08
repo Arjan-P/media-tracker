@@ -1,17 +1,25 @@
-import type { MediaItem, MediaType } from "@media-tracker/shared";
+import type {
+  MediaItem,
+  MediaProviderType,
+  MediaType,
+} from "@media-tracker/shared";
 import type {
   MediaProvider,
   SearchParams,
   ProviderResult,
 } from "./provider.interface.js";
-import axios from "axios";
 
 const BASE = "https://api.jikan.moe/v4";
 
 // normalize api response shape to api MediaItem
-function normalize(raw: any, type: MediaType): MediaItem {
+function normalize(
+  raw: any,
+  provider: MediaProviderType,
+  type: MediaType,
+): MediaItem {
   return {
-    id: String(raw.mal_id),
+    provider,
+    providerId: String(raw.mal_id),
     type,
     name: raw.title_english ?? raw.title,
     description: raw.synopsis ?? null,
@@ -24,6 +32,7 @@ function makeJikanProvider(mediaType: MediaType): MediaProvider {
   const endpoint = mediaType === "anime" ? "anime" : "manga";
 
   return {
+    provider: "jikan",
     type: mediaType,
 
     // Jikan rate-limits at 3 req/sec
@@ -44,7 +53,9 @@ function makeJikanProvider(mediaType: MediaType): MediaProvider {
       if (!res.ok) throw new Error(`Jikan error: ${res.status}`);
       const data = await res.json();
       return {
-        items: data.data.map((r: any) => normalize(r, mediaType)),
+        items: data.data.map((r: any) =>
+          normalize(r, this.provider, mediaType),
+        ),
         totalItems: data.pagination?.items?.total ?? data.data.length,
         count: data.pagination?.items?.count ?? 0,
       };
@@ -54,7 +65,7 @@ function makeJikanProvider(mediaType: MediaType): MediaProvider {
       const res = await fetch(`${BASE}/${endpoint}/${providerId}`);
       if (!res.ok) return null;
       const { data } = await res.json();
-      return normalize(data, mediaType);
+      return normalize(data, this.provider, mediaType);
     },
   };
 }
