@@ -8,6 +8,7 @@ export interface SearchParams {
 
 export interface ProviderResult {
   items: MediaItem[];
+  count: number;
   totalItems: number;
 }
 

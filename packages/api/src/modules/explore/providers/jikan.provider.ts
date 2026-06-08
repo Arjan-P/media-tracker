@@ -46,6 +46,7 @@ function makeJikanProvider(mediaType: MediaType): MediaProvider {
       return {
         items: data.data.map((r: any) => normalize(r, mediaType)),
         totalItems: data.pagination?.items?.total ?? data.data.length,
+        count: data.pagination?.items?.count ?? 0,
       };
     },
 

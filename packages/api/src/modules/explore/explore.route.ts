@@ -18,7 +18,6 @@ export async function exploreRoutes(fastify: FastifyInstance) {
     {
       schema: {
         tags: ["Explore"],
-        security: [{ bearerAuth: [] }],
         querystring: searchQuerySchema,
         response: {
           200: paginatedResponse(MediaItemSchema),
@@ -34,7 +33,6 @@ export async function exploreRoutes(fastify: FastifyInstance) {
     {
       schema: {
         tags: ["Explore"],
-        security: [{ bearerAuth: [] }],
         querystring: getByIdParamsSchema,
         response: {
           200: successResponse(MediaItemSchema),

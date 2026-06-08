@@ -14,6 +14,7 @@ export class ExploreController {
     return paginated(result.items, {
       page,
       limit,
+      count: result.count,
       totalItems: result.totalItems,
       totalPages: Math.ceil(result.totalItems / limit),
       hasNextPage: page * limit < result.totalItems,

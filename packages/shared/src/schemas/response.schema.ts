@@ -7,6 +7,7 @@ export const paginationSchema = z.object({
   limit: z.number().int().positive(),
   totalItems: z.number().int().nonnegative(),
   totalPages: z.number().int().nonnegative(),
+  count: z.int(),
   hasNextPage: z.boolean(),
   hasPreviousPage: z.boolean(),
 });
