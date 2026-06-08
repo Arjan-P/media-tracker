@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { ERROR_CODES } from "../types/response.type.js";
+import { userProfileSchema } from "./auth.schema.js";
 
 const paginationSchema = z.object({
   page: z.number().int().positive(),
@@ -20,7 +21,21 @@ export const successResponse = <T extends z.ZodTypeAny>(dataSchema: T) =>
     meta: z
       .object({
         message: z.string().optional(),
-        pagination: paginationSchema.optional(),
+      })
+      .optional(),
+  });
+
+/**
+ * Paginated Response
+ */
+export const paginatedResponse = <T extends z.ZodTypeAny>(dataSchema: T) =>
+  z.object({
+    success: z.literal(true),
+    data: z.array(dataSchema),
+    pagination: paginationSchema,
+    meta: z
+      .object({
+        message: z.string().optional(),
       })
       .optional(),
   });
@@ -36,4 +51,13 @@ export const errorResponse = z.object({
     // TODO: strip details behind an isDev flag
     details: z.any().optional(),
   }),
+});
+
+export const authResponseSchema = z.object({
+  user: userProfileSchema,
+  accessToken: z.string(),
+});
+
+export const meResponseSchema = z.object({
+  user: userProfileSchema,
 });

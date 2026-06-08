@@ -11,12 +11,3 @@ export const userProfileSchema = z.object({
   firstName: z.string(),
   lastName: z.string(),
 });
-
-export const authResponseSchema = z.object({
-  user: userProfileSchema,
-  accessToken: z.string(),
-});
-
-export const meResponseSchema = z.object({
-  user: userProfileSchema,
-});
