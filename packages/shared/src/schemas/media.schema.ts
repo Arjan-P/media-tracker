@@ -10,7 +10,7 @@ export const MediaTypeSchema = z.enum([
 ]);
 
 export const MediaItemSchema = z.object({
-  id: z.uuid(),
+  id: z.string(),
   type: MediaTypeSchema,
   name: z.string(),
 
