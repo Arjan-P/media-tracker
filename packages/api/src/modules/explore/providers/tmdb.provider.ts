@@ -30,35 +30,28 @@ async function tmdbGet<T>(
   return res.json();
 }
 
-function normalize(
-  raw: any,
-  provider: MediaProviderType,
-  type: MediaType,
-): MediaItem {
-  return {
-    provider,
-    providerId: String(raw.id),
-    type,
-    name: raw.title ?? raw.name,
-    description: raw.overview ?? null,
-    coverUrl: raw.poster_path ? `${IMG}${raw.poster_path}` : null,
-    releaseDate: raw.release_date ?? raw.first_air_date ?? null,
-  };
-}
-
 export class TmdbMovieProvider implements MediaProvider {
   readonly type: MediaType = "movie";
   readonly provider: MediaProviderType = "tmdb";
 
+  private normalize(raw: any): MediaItem {
+    return {
+      provider: this.provider,
+      providerId: String(raw.id),
+      type: this.type,
+      name: raw.title ?? raw.name,
+      description: raw.overview ?? null,
+      coverUrl: raw.poster_path ? `${IMG}${raw.poster_path}` : null,
+      releaseDate: raw.release_date ?? raw.first_air_date ?? null,
+    };
+  }
   async search({ query, page }: SearchParams): Promise<ProviderResult> {
     const data = await tmdbGet<any>("/search/movie", {
       query,
       page: String(page),
     });
     return {
-      items: data.results.map((r: any) =>
-        normalize(r, this.provider, this.type),
-      ),
+      items: data.results.map((r: any) => this.normalize(r)),
       count: data.results.length,
       totalItems: data.total_results,
     };
@@ -66,7 +59,7 @@ export class TmdbMovieProvider implements MediaProvider {
 
   async getById(providerId: string): Promise<MediaItem | null> {
     const raw = await tmdbGet<any>(`/movie/${providerId}`);
-    return normalize(raw, this.provider, this.type);
+    return this.normalize(raw);
   }
 }
 
@@ -74,15 +67,25 @@ export class TmdbTvProvider implements MediaProvider {
   readonly type: MediaType = "tv";
   readonly provider: MediaProviderType = "tmdb";
 
+  private normalize(raw: any): MediaItem {
+    return {
+      provider: this.provider,
+      providerId: String(raw.id),
+      type: this.type,
+      name: raw.title ?? raw.name,
+      description: raw.overview ?? null,
+      coverUrl: raw.poster_path ? `${IMG}${raw.poster_path}` : null,
+      releaseDate: raw.release_date ?? raw.first_air_date ?? null,
+    };
+  }
+
   async search({ query, page }: SearchParams): Promise<ProviderResult> {
     const data = await tmdbGet<any>("/search/tv", {
       query,
       page: String(page),
     });
     return {
-      items: data.results.map((r: any) =>
-        normalize(r, this.provider, this.type),
-      ),
+      items: data.results.map((r: any) => this.normalize(r)),
       totalItems: data.results.length,
       count: data.total_results,
     };
@@ -90,6 +93,6 @@ export class TmdbTvProvider implements MediaProvider {
 
   async getById(providerId: string): Promise<MediaItem | null> {
     const raw = await tmdbGet<any>(`/tv/${providerId}`);
-    return normalize(raw, this.provider, this.type);
+    return this.normalize(raw);
   }
 }

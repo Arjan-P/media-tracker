@@ -10,10 +10,12 @@ import {
   TmdbMovieProvider,
   TmdbTvProvider,
 } from "./providers/tmdb.provider.js";
+import { OpenLibraryProvider } from "./providers/openlibrary.provider.js";
 
 const providerRegistry = new Map<MediaType, MediaProvider>([
   ["movie", new TmdbMovieProvider()],
   ["tv", new TmdbTvProvider()],
+  ["book", new OpenLibraryProvider()],
   ["anime", JikanAnimeProvider],
   ["manga", JikanMangaProvider],
 ]);
