@@ -3,6 +3,7 @@ import {
   authResponseSchema,
   errorResponse,
   meResponseSchema,
+  paginationSchema,
 } from "../schemas/response.schema.js";
 
 export const ERROR_CODES = [
@@ -40,6 +41,7 @@ export type PaginatedResponse<T> = {
   };
 };
 
+export type Pagination = z.infer<typeof paginationSchema>;
 export type ErrorResponse = z.infer<typeof errorResponse>;
 export type AuthResponse = z.infer<typeof authResponseSchema>;
 export type MeResponse = z.infer<typeof meResponseSchema>;

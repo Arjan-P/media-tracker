@@ -2,7 +2,7 @@ import { z } from "zod";
 import { ERROR_CODES } from "../types/response.type.js";
 import { userProfileSchema } from "./auth.schema.js";
 
-const paginationSchema = z.object({
+export const paginationSchema = z.object({
   page: z.number().int().positive(),
   limit: z.number().int().positive(),
   totalItems: z.number().int().nonnegative(),
