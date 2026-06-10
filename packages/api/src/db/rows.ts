@@ -1,4 +1,8 @@
-import type { MediaProviderType, MediaType } from "@media-tracker/shared";
+import type {
+  MediaProviderType,
+  MediaStatus,
+  MediaType,
+} from "@media-tracker/shared";
 
 export interface UserRow {
   id: string;
@@ -13,13 +17,40 @@ export interface UserRow {
 
 export interface MediaItemRow {
   id: string;
-  providerId: string;
+  provider_id: string;
   provider: MediaProviderType;
   type: MediaType;
   name: string;
   description: string | null;
-  coverUrl: string | null;
-  releaseDate: Date | null;
+  cover_url: string | null;
+  release_date: Date | null;
   meta: Record<string, unknown>;
-  createdAt: Date;
+  created_at: Date;
+}
+
+export interface UserMediaRow {
+  id: string;
+  user_id: string;
+  media_item_id: string;
+
+  status: MediaStatus;
+  rating: number;
+  review: string;
+
+  started_at: Date;
+  completed_at: Date;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface UserMediaWithItemRow extends UserMediaRow {
+  provider: MediaProviderType;
+  provider_id: string;
+  type: MediaType;
+  name: string;
+  description: string | null;
+  cover_url: string | null;
+  release_date: Date | null;
+  meta: Record<string, unknown>;
+  item_created_at: Date;
 }

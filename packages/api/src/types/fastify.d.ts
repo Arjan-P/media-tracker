@@ -11,6 +11,6 @@ declare module "fastify" {
 declare module "@fastify/jwt" {
   interface FastifyJWT {
     payload: JWTUser;
-    user: JWTUser;
+    user?: JWTUser;
   }
 }
