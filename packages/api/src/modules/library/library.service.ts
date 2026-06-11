@@ -1,10 +1,78 @@
 import type { FastifyInstance } from "fastify";
 import { LibraryRepository } from "./library.repository.js";
-import type { AddMediaBodyType, ListQueryType } from "./library.schema.js";
-import type { UserMediaWithItemRow } from "../../db/rows.js";
-import type { LibraryEntry, MediaStatus } from "@media-tracker/shared";
+import type {
+  AddMediaBodyType,
+  ListQueryType,
+  UpdateMediaBodyType,
+} from "./library.schema.js";
+import type { MediaProgress, UserMediaFullRow } from "../../db/rows.js";
+import type { LibraryEntry, Progress } from "@media-tracker/shared";
 
-function toLibraryEntry(row: UserMediaWithItemRow): LibraryEntry {
+export function progressRowToDto(
+  progress: MediaProgress | null,
+): Progress | null {
+  if (!progress) return null;
+
+  switch (progress.type) {
+    case "book":
+      return {
+        type: "book",
+        progress: {
+          currentPage: progress.current_page,
+          totalPages: progress.total_pages,
+          percentage:
+            progress.total_pages > 0
+              ? Math.round((progress.current_page / progress.total_pages) * 100)
+              : 0,
+        },
+      };
+
+    case "tv":
+      return {
+        type: "tv",
+        progress: {
+          currentSeason: progress.current_season,
+          currentEpisode: progress.current_episode,
+          totalSeasons: progress.total_seasons,
+          totalEpisodes: progress.total_episodes,
+        },
+      };
+
+    case "game":
+      return {
+        type: "game",
+        progress: {
+          hoursPlayed: progress.hours_played,
+          completionPct: progress.completion_pct,
+        },
+      };
+
+    case "anime":
+      return {
+        type: "anime",
+        progress: {
+          currentEpisode: progress.current_episode,
+          totalEpisodes: progress.total_episodes,
+        },
+      };
+
+    case "manga":
+      return {
+        type: "manga",
+        progress: {
+          currentChapter: progress.current_chapter,
+          currentVolume: progress.current_volume,
+          totalChapters: progress.total_chapters,
+          totalVolumes: progress.total_volumes,
+        },
+      };
+
+    default:
+      return null;
+  }
+}
+
+function toLibraryEntry(row: UserMediaFullRow): LibraryEntry {
   return {
     id: row.id,
     mediaItem: {
@@ -18,6 +86,7 @@ function toLibraryEntry(row: UserMediaWithItemRow): LibraryEntry {
       releaseDate: row.release_date?.toISOString().split("T")[0] ?? null,
       createdAt: row.item_created_at.toISOString(),
     },
+    progress: progressRowToDto(row.progress),
     status: row.status as any,
     rating: row.rating,
     review: row.review,
@@ -50,35 +119,19 @@ export class LibraryService {
       meta: {},
     });
     const row = await this.repo.addToLibrary(userId, mediaItem.id);
+    if (!row) {
+      // TODO: handle null row
+      throw new Error();
+    }
     return toLibraryEntry(row);
   }
 
-  async updateStatus(
+  async updateMedia(
     id: string,
     userId: string,
-    status: MediaStatus,
+    data: UpdateMediaBodyType,
   ): Promise<LibraryEntry | null> {
-    const row = await this.repo.updateStatus(id, userId, status);
-    if (!row) return null;
-    return toLibraryEntry(row);
-  }
-
-  async updateRating(
-    id: string,
-    userId: string,
-    rating: number,
-  ): Promise<LibraryEntry | null> {
-    const row = await this.repo.updateRating(id, userId, rating);
-    if (!row) return null;
-    return toLibraryEntry(row);
-  }
-
-  async updateReview(
-    id: string,
-    userId: string,
-    review: string,
-  ): Promise<LibraryEntry | null> {
-    const row = await this.repo.updateReview(id, userId, review);
+    const row = await this.repo.updateMedia(id, userId, data);
     if (!row) return null;
     return toLibraryEntry(row);
   }

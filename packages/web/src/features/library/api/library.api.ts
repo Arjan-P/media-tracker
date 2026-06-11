@@ -4,8 +4,16 @@ import type {
   MediaItem,
   MediaStatus,
   PaginatedResponse,
+  Progress,
   SuccessResponse,
 } from "@media-tracker/shared";
+
+export interface MediaUpdateBody {
+  status?: MediaStatus;
+  rating?: number;
+  review?: string;
+  progress?: Progress;
+}
 
 export async function addMedia(item: MediaItem) {
   const res = await api.post<SuccessResponse<LibraryEntry>>(
@@ -33,26 +41,10 @@ export async function getLibraryItem(id: string) {
   return res.data.data;
 }
 
-export async function updateStatus(id: string, status: MediaStatus) {
+export async function updateMedia(id: string, data: MediaUpdateBody) {
   const res = await api.patch<SuccessResponse<LibraryEntry>>(
-    `/api/library/${id}/status`,
-    { status },
-  );
-  return res.data.data;
-}
-
-export async function updateRating(id: string, rating: number) {
-  const res = await api.patch<SuccessResponse<LibraryEntry>>(
-    `/api/library/${id}/rating`,
-    { rating },
-  );
-  return res.data.data;
-}
-
-export async function updateReview(id: string, review: string) {
-  const res = await api.patch<SuccessResponse<LibraryEntry>>(
-    `/api/library/${id}/review`,
-    { review },
+    `/api/library/${id}`,
+    data,
   );
   return res.data.data;
 }

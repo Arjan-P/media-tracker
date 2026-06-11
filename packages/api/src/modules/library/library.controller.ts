@@ -3,9 +3,7 @@ import { LibraryService } from "./library.service.js";
 import {
   AddMediaBodyType,
   ListQueryType,
-  RateBodyType,
-  ReviewBodyType,
-  UpdateStatusBodyType,
+  UpdateMediaBodyType,
 } from "./library.schema.js";
 
 import { requireUserId } from "../../utils/auth.js";
@@ -29,57 +27,17 @@ export class LibraryController {
     return reply.status(201).send(response);
   }
 
-  async updateStatus(
+  async updateMedia(
     request: FastifyRequest<{
       Params: { id: string };
-      Body: UpdateStatusBodyType;
+      Body: UpdateMediaBodyType;
     }>,
   ) {
     const userId = requireUserId(request);
-    const item = await this.service.updateStatus(
+    const item = await this.service.updateMedia(
       request.params.id,
       userId,
-      request.body.status,
-    );
-
-    if (!item) {
-      throw new NotFoundError("Media Item not found in library");
-    }
-
-    return ok(item);
-  }
-
-  async updateRating(
-    request: FastifyRequest<{
-      Params: { id: string };
-      Body: RateBodyType;
-    }>,
-  ) {
-    const userId = requireUserId(request);
-    const item = await this.service.updateRating(
-      request.params.id,
-      userId,
-      request.body.rating,
-    );
-
-    if (!item) {
-      throw new NotFoundError("Media Item not found in library");
-    }
-
-    return ok(item);
-  }
-
-  async updateReview(
-    request: FastifyRequest<{
-      Params: { id: string };
-      Body: ReviewBodyType;
-    }>,
-  ) {
-    const userId = requireUserId(request);
-    const item = await this.service.updateReview(
-      request.params.id,
-      userId,
-      request.body.review,
+      request.body,
     );
 
     if (!item) {

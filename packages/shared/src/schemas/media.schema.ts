@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { progressSchema } from "./progress.schema.js";
 
 export const MediaProvider = z.enum(["tmdb", "igdb", "openlibrary", "jikan"]);
 
@@ -42,6 +43,7 @@ export const LibraryEntrySchema = z.object({
   status: MediaStatusSchema,
   rating: z.number().int().min(1).max(10).nullable(),
   review: z.string().nullable(),
+  progress: progressSchema.nullable(),
   startedAt: z.string().datetime().nullable(),
   completedAt: z.string().datetime().nullable(),
   createdAt: z.string().datetime(),

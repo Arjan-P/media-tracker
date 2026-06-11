@@ -3,6 +3,7 @@ import {
   MediaProvider,
   MediaTypeSchema,
   MediaStatusSchema,
+  progressSchema,
 } from "@media-tracker/shared";
 
 // POST /tracker — add an item (upserts media_items, creates user_media)
@@ -16,20 +17,24 @@ export const addMediaBodySchema = z.object({
   releaseDate: z.string().date().nullable().optional(),
 });
 
-// PATCH /tracker/:id/status
-export const updateStatusBodySchema = z.object({
-  status: MediaStatusSchema,
-});
-
-// PATCH /tracker/:id/rating
-export const rateBodySchema = z.object({
-  rating: z.number().int().min(1).max(10),
-});
-
-// PATCH /tracker/:id/review
-export const reviewBodySchema = z.object({
-  review: z.string().min(1).max(10_000),
-});
+// PATCH /tracker/:id
+export const updateMediaBodySchema = z
+  .object({
+    status: MediaStatusSchema.optional(),
+    rating: z.number().int().min(1).max(10).optional(),
+    review: z.string().min(1).max(10_000).optional(),
+    progress: progressSchema.optional(),
+  })
+  .refine(
+    (data) =>
+      data.status !== undefined ||
+      data.rating !== undefined ||
+      data.review !== undefined ||
+      data.progress !== undefined,
+    {
+      message: "At least one field must be provided",
+    },
+  );
 
 // GET /tracker?status=&type=&page=&limit=
 export const listQuerySchema = z.object({
@@ -42,7 +47,5 @@ export const listQuerySchema = z.object({
 export const idParamSchema = z.object({ id: z.uuid() });
 
 export type AddMediaBodyType = z.infer<typeof addMediaBodySchema>;
-export type UpdateStatusBodyType = z.infer<typeof updateStatusBodySchema>;
-export type RateBodyType = z.infer<typeof rateBodySchema>;
-export type ReviewBodyType = z.infer<typeof reviewBodySchema>;
+export type UpdateMediaBodyType = z.infer<typeof updateMediaBodySchema>;
 export type ListQueryType = z.infer<typeof listQuerySchema>;

@@ -2,5 +2,5 @@ packages:
   - 'packages/*'
 allowBuilds:
   bcrypt: true
-  esbuild: set this to true or false
+  esbuild: true
   msw: true

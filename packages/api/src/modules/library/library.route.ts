@@ -6,9 +6,7 @@ import {
   addMediaBodySchema,
   idParamSchema,
   listQuerySchema,
-  rateBodySchema,
-  reviewBodySchema,
-  updateStatusBodySchema,
+  updateMediaBodySchema,
 } from "./library.schema.js";
 import {
   LibraryEntrySchema,
@@ -73,57 +71,21 @@ export async function libraryRoutes(fastify: FastifyInstance) {
   );
 
   app.patch(
-    "/:id/status",
+    "/:id",
     {
       preHandler: [app.authenticate],
       schema: {
         tags: ["Library"],
         security: [{ bearerAuth: [] }],
         params: idParamSchema,
-        body: updateStatusBodySchema,
+        body: updateMediaBodySchema,
         response: {
           200: successResponse(LibraryEntrySchema),
           ...commonErrorResponses,
         },
       },
     },
-    controller.updateStatus.bind(controller),
-  );
-
-  app.patch(
-    "/:id/rating",
-    {
-      preHandler: [app.authenticate],
-      schema: {
-        tags: ["Library"],
-        security: [{ bearerAuth: [] }],
-        params: idParamSchema,
-        body: rateBodySchema,
-        response: {
-          200: successResponse(LibraryEntrySchema),
-          ...commonErrorResponses,
-        },
-      },
-    },
-    controller.updateRating.bind(controller),
-  );
-
-  app.patch(
-    "/:id/review",
-    {
-      preHandler: [app.authenticate],
-      schema: {
-        tags: ["Library"],
-        security: [{ bearerAuth: [] }],
-        params: idParamSchema,
-        body: reviewBodySchema,
-        response: {
-          200: successResponse(LibraryEntrySchema),
-          ...commonErrorResponses,
-        },
-      },
-    },
-    controller.updateReview.bind(controller),
+    controller.updateMedia.bind(controller),
   );
 
   app.delete(

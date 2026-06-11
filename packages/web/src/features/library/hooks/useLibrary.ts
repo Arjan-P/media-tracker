@@ -2,10 +2,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   listLibrary,
   getLibraryItem,
-  updateStatus,
-  updateRating,
-  updateReview,
   removeFromLibrary,
+  MediaUpdateBody,
+  updateMedia,
 } from "../api/library.api";
 import { MediaStatus } from "@media-tracker/shared";
 
@@ -32,33 +31,15 @@ export function useLibraryItem(id: string) {
   });
 }
 
-export function useUpdateStatus(id: string) {
+export function useUpdateMedia(id: string) {
   const qc = useQueryClient();
+
   return useMutation({
-    mutationFn: (status: MediaStatus) => updateStatus(id, status),
+    mutationFn: (data: MediaUpdateBody) => updateMedia(id, data),
+
     onSuccess: (updated) => {
       qc.setQueryData(libraryKeys.details(id), updated);
       qc.invalidateQueries({ queryKey: libraryKeys.all });
-    },
-  });
-}
-
-export function useUpdateRating(id: string) {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (rating: number) => updateRating(id, rating),
-    onSuccess: (updated) => {
-      qc.setQueryData(libraryKeys.details(id), updated);
-    },
-  });
-}
-
-export function useUpdateReview(id: string) {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (review: string) => updateReview(id, review),
-    onSuccess: (updated) => {
-      qc.setQueryData(libraryKeys.details(id), updated);
     },
   });
 }
