@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-import { ROUTES } from "@/app/router/router";
+import { ROUTES } from "@/app/router/routes";
 import { LoginForm } from "../components/LoginForm";
 import { useLogin } from "../hooks/useLogin";
 
@@ -12,7 +12,7 @@ export function LoginPage() {
   function handleLogin(data: { email: string; password: string }) {
     loginMutation.mutate(data, {
       onSuccess: () => {
-        navigate(ROUTES.DASHBOARD, { replace: true });
+        navigate(ROUTES.HOME, { replace: true });
       },
     });
   }

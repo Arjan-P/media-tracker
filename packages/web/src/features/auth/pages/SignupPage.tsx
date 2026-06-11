@@ -2,7 +2,7 @@
 
 import { useNavigate } from "react-router-dom";
 
-import { ROUTES } from "@/app/router/router";
+import { ROUTES } from "@/app/router/routes";
 import { SignupForm } from "../components/SignupForm";
 import { useSignup } from "../hooks/useSignup";
 
@@ -31,7 +31,7 @@ export function SignupPage() {
       },
       {
         onSuccess: () => {
-          navigate(ROUTES.DASHBOARD, { replace: true });
+          navigate(ROUTES.HOME, { replace: true });
         },
       },
     );

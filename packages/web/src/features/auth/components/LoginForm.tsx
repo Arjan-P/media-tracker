@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
-import { ROUTES } from "@/app/router/router";
+import { ROUTES } from "@/app/router/routes";
 
 interface LoginFormProps {
   className?: string;
