@@ -1,6 +1,6 @@
 import { LogOutIcon, MoreVerticalIcon } from "lucide-react";
-
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Link } from "react-router-dom";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,18 +15,35 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/features/auth";
+import { ROUTES } from "@/app/router/routes";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
   const user = useAuthStore((s) => s.user);
-  const signOut = useAuthStore((s) => s.logout);
-  if (!user) return null;
-  const name = user.firstName || user.email || "User";
+  const logout = useAuthStore((s) => s.logout);
 
-  const email = user.email;
+  // Anonymous state
+  if (!user) {
+    return (
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <div className="flex flex-col gap-2 px-2 py-2">
+            <Button asChild size="sm" className="w-full">
+              <Link to={ROUTES.LOGIN}>Sign in</Link>
+            </Button>
+            <Button asChild size="sm" variant="outline" className="w-full">
+              <Link to={ROUTES.SIGNUP}>Create account</Link>
+            </Button>
+          </div>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    );
+  }
 
-  const initials = user.firstName[0]?.toUpperCase() || "U";
+  const initials =
+    `${user.firstName[0] ?? ""}${user.lastName[0] ?? ""}`.toUpperCase();
 
   return (
     <SidebarMenu>
@@ -35,18 +52,19 @@ export function NavUser() {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="data-[state=open]:bg-sidebar-accent"
             >
-              <Avatar className="h-8 w-8 rounded-lg grayscale">
-                <AvatarImage alt={name} />
+              <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarFallback className="rounded-lg">
                   {initials}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{name}</span>
+                <span className="truncate font-medium">
+                  {user.firstName} {user.lastName}
+                </span>
                 <span className="truncate text-xs text-muted-foreground">
-                  {email}
+                  {user.email}
                 </span>
               </div>
               <MoreVerticalIcon className="ml-auto size-4" />
@@ -59,25 +77,26 @@ export function NavUser() {
             sideOffset={4}
           >
             <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+              <div className="flex items-center gap-2 px-1 py-1.5">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage alt={name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{name}</span>
+                  <span className="truncate font-medium">
+                    {user.firstName} {user.lastName}
+                  </span>
                   <span className="truncate text-xs text-muted-foreground">
-                    {email}
+                    {user.email}
                   </span>
                 </div>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => signOut()}
-              className="text-destructive hover:text-destructive focus:text-destructive"
+              onClick={logout}
+              className="text-destructive focus:text-destructive"
             >
-              <LogOutIcon />
+              <LogOutIcon className="mr-2 size-4" />
               Log out
             </DropdownMenuItem>
           </DropdownMenuContent>

@@ -27,7 +27,7 @@ export class OpenLibraryProvider implements MediaProvider {
         ? `https://covers.openlibrary.org/b/id/${coverId}-L.jpg`
         : null,
       releaseDate: raw.first_publish_year
-        ? String(raw.first_publish_year)
+        ? `${String(raw.first_publish_year)}-01-01`
         : null,
     };
   }

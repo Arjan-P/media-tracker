@@ -6,6 +6,7 @@ import { env } from "../configs/env/env.js";
 export const securityPlugin = fp(async (app) => {
   await app.register(cors, {
     origin: env.FRONTEND_URL,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     credentials: true,
   });
 

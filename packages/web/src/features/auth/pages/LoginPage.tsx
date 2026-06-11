@@ -1,19 +1,17 @@
-import { useNavigate } from "react-router-dom";
-
+import { useLocation, useNavigate } from "react-router-dom";
+import { useLogin } from "../hooks/useLogin";
 import { ROUTES } from "@/app/router/routes";
 import { LoginForm } from "../components/LoginForm";
-import { useLogin } from "../hooks/useLogin";
 
 export function LoginPage() {
   const navigate = useNavigate();
-
+  const location = useLocation();
+  const from = (location.state as any)?.from ?? ROUTES.LIBRARY;
   const loginMutation = useLogin();
 
   function handleLogin(data: { email: string; password: string }) {
     loginMutation.mutate(data, {
-      onSuccess: () => {
-        navigate(ROUTES.HOME, { replace: true });
-      },
+      onSuccess: () => navigate(from, { replace: true }),
     });
   }
 

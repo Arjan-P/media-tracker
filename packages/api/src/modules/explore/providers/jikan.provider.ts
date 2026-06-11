@@ -24,7 +24,7 @@ function normalize(
     name: raw.title_english ?? raw.title,
     description: raw.synopsis ?? null,
     coverUrl: raw.images?.jpg?.large_image_url ?? null,
-    releaseDate: raw.aired?.from ?? raw.published?.from ?? null,
+    releaseDate: (raw.aired?.from ?? raw.published?.from)?.slice(0, 10) ?? null,
   };
 }
 
