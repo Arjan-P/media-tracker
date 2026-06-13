@@ -1,4 +1,4 @@
-import type { LibraryEntry } from "@media-tracker/shared";
+import type { MediaItem } from "@media-tracker/shared";
 
 import {
   MorphingDialog,
@@ -8,14 +8,22 @@ import {
   MorphingDialogClose,
 } from "@/components/motion-primitives/morphing-dialog";
 
-import { LibraryCard } from "@/components/MediaCard";
-import { LibraryDetailPanel } from "../components/LibraryDetailPanel";
+import { ExploreCard } from "@/components/MediaCard";
+import { ExploreDetailPanel } from "../components/ExploreDetailPanel";
 
 interface Props {
-  entry: LibraryEntry;
+  item: MediaItem;
+  inLibrary?: boolean;
+  isPending?: boolean;
+  onAdd: () => void;
 }
 
-export function LibraryMorphDialog({ entry }: Props) {
+export function ExploreMorphDialog({
+  item,
+  inLibrary,
+  isPending,
+  onAdd,
+}: Props) {
   return (
     <MorphingDialog
       transition={{
@@ -28,7 +36,12 @@ export function LibraryMorphDialog({ entry }: Props) {
         className="block w-full rounded-xl"
         style={{ borderRadius: "12px" }}
       >
-        <LibraryCard entry={entry} />
+        <ExploreCard
+          item={item}
+          inLibrary={inLibrary}
+          isPending={isPending}
+          onAdd={onAdd}
+        />
       </MorphingDialogTrigger>
 
       <MorphingDialogContainer>
@@ -36,7 +49,12 @@ export function LibraryMorphDialog({ entry }: Props) {
           className="relative w-[95vw] max-w-2xl max-h-[90vh] overflow-hidden rounded-2xl border border-border bg-background"
           style={{ borderRadius: "16px" }}
         >
-          <LibraryDetailPanel entry={entry} />
+          <ExploreDetailPanel
+            item={item}
+            inLibrary={inLibrary}
+            isPending={isPending}
+            onAdd={onAdd}
+          />
           <MorphingDialogClose className="absolute top-3 right-3 rounded-full bg-black/40 p-1.5 text-white hover:bg-black/60 transition-colors" />
         </MorphingDialogContent>
       </MorphingDialogContainer>

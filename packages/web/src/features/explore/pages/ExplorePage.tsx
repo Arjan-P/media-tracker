@@ -5,7 +5,7 @@ import type { MediaType } from "@media-tracker/shared";
 import { useSearch } from "../hooks/useSearch";
 import { useAddToLibrary } from "../hooks/useAddToLibrary";
 import { SearchBar } from "../components/SearchBar";
-import { ExploreCard } from "@/components/MediaCard";
+import { ExploreMorphDialog } from "../components/ExploreMorphDialog";
 import { EmptyState } from "@/features/library/components/EmptyState";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useLibraryList } from "@/features/library/hooks/useLibrary";
@@ -122,7 +122,7 @@ export function ExplorePage() {
               )}
             >
               {items.map((item) => (
-                <ExploreCard
+                <ExploreMorphDialog
                   key={item.providerId}
                   item={item}
                   inLibrary={libraryProviderIds.has(item.providerId)}

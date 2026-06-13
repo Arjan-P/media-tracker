@@ -157,7 +157,7 @@ export function ExploreCard({
   const Icon = TYPE_ICONS[item.type] ?? Film;
 
   return (
-    <div className="group rounded-xl border border-border bg-card overflow-hidden flex flex-col">
+    <div className="group rounded-xl border border-border bg-card overflow-hidden flex flex-col cursor-pointer hover:border-foreground/30 transition-colors">
       <div
         className={cn(
           "relative w-full aspect-[2/3] flex items-center justify-center overflow-hidden",
@@ -165,26 +165,28 @@ export function ExploreCard({
         )}
       >
         {item.coverUrl ? (
-          <img
+          <MorphingDialogImage
             src={item.coverUrl}
             alt={item.name}
             className="absolute inset-0 w-full h-full object-cover"
-            loading="lazy"
           />
         ) : (
           <Icon className="w-10 h-10 text-white/30" />
         )}
       </div>
       <div className="px-2.5 pt-2 pb-2.5 flex flex-col flex-1">
-        <p className="text-xs font-medium text-foreground leading-tight line-clamp-2 flex-1">
+        <MorphingDialogTitle className="text-xs font-medium text-foreground leading-tight line-clamp-2 flex-1">
           {item.name}
-        </p>
-        <p className="text-[11px] text-muted-foreground mt-0.5 capitalize mb-2">
+        </MorphingDialogTitle>
+        <MorphingDialogSubtitle className="text-[11px] text-muted-foreground mt-0.5 capitalize mb-2">
           {item.releaseDate?.slice(0, 4) ?? "—"}
-        </p>
+        </MorphingDialogSubtitle>
         <Button
           size="sm"
-          onClick={onAdd}
+          onClick={(e) => {
+            e.stopPropagation();
+            onAdd();
+          }}
           disabled={inLibrary || isPending}
           variant={inLibrary ? "secondary" : "default"}
           className="w-full text-[11px] h-7"
