@@ -112,7 +112,7 @@ export function LibraryCard({ entry }: LibraryCardProps) {
         </Badge>
 
         {rating != null && (
-          <span className="absolute top-2 right-2 bg-black/60 text-white text-[10px] font-medium px-1.5 py-0.5 rounded-md flex items-center gap-0.5">
+          <span className="absolute top-2 right-2 bg-yellow-500 text-white text-[10px] font-medium px-1.5 py-0.5 rounded-md flex items-center gap-0.5">
             ★ {rating}
           </span>
         )}
