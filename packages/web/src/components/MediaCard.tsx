@@ -28,9 +28,9 @@ const TYPE_COLORS: Record<string, string> = {
 };
 
 const STATUS_VARIANTS = {
-  planned: "secondary",
-  in_progress: "default",
-  completed: "outline",
+  planned: "outline",
+  in_progress: "secondary",
+  completed: "default",
   dropped: "destructive",
 } as const;
 
