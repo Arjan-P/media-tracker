@@ -10,6 +10,8 @@ import { EmptyState } from "@/features/library/components/EmptyState";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useLibraryList } from "@/features/library/hooks/useLibrary";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const TYPE_LABELS: Record<MediaType, string> = {
   movie: "Movies",
@@ -54,7 +56,6 @@ export function ExplorePage() {
   function handleAdd(item: Parameters<typeof add>[0]) {
     setPendingId(item.providerId);
     add(item);
-    // Clear pending state after a short delay
     setTimeout(() => setPendingId(null), 1500);
   }
 
@@ -80,17 +81,14 @@ export function ExplorePage() {
       <div className="flex-1 overflow-y-auto p-4">
         {/* Loading skeleton */}
         {(isLoading || (isFetching && items.length === 0)) && hasQuery && (
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(130px,1fr))] gap-3">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(190px,1fr))] gap-4">
             {Array.from({ length: 12 }).map((_, i) => (
-              <div
-                key={i}
-                className="rounded-xl border border-border overflow-hidden animate-pulse"
-              >
-                <div className="aspect-[2/3] bg-muted" />
-                <div className="p-2.5 space-y-1.5">
-                  <div className="h-3 bg-muted rounded w-3/4" />
-                  <div className="h-2.5 bg-muted rounded w-1/2" />
-                  <div className="h-6 bg-muted rounded mt-2" />
+              <div key={i} className="overflow-hidden rounded-xl border">
+                <Skeleton className="aspect-[2/3] w-full" />
+                <div className="space-y-2 p-3">
+                  <Skeleton className="h-3 w-3/4" />
+                  <Skeleton className="h-2.5 w-1/2" />
+                  <Skeleton className="h-7 w-full" />
                 </div>
               </div>
             ))}
@@ -119,7 +117,7 @@ export function ExplorePage() {
           <>
             <div
               className={cn(
-                "grid grid-cols-[repeat(auto-fill,minmax(130px,1fr))] gap-3 transition-opacity",
+                "grid grid-cols-[repeat(auto-fill,minmax(190px,1fr))] gap-4 transition-opacity",
                 isFetching ? "opacity-60" : "opacity-100",
               )}
             >
@@ -137,23 +135,25 @@ export function ExplorePage() {
             {/* Pagination */}
             {pagination && pagination.totalPages > 1 && (
               <div className="flex items-center justify-center gap-3 mt-6 pb-2">
-                <button
+                <Button
+                  variant="outline"
+                  size="sm"
                   disabled={!pagination.hasPreviousPage}
                   onClick={() => setPage((p) => p - 1)}
-                  className="text-xs px-3 py-1.5 rounded-lg border border-border disabled:opacity-40 hover:bg-muted transition-colors"
                 >
                   Previous
-                </button>
-                <span className="text-xs text-muted-foreground">
+                </Button>
+                <span className="text-sm text-muted-foreground">
                   {pagination.page} / {pagination.totalPages}
                 </span>
-                <button
+                <Button
+                  variant="outline"
+                  size="sm"
                   disabled={!pagination.hasNextPage}
                   onClick={() => setPage((p) => p + 1)}
-                  className="text-xs px-3 py-1.5 rounded-lg border border-border disabled:opacity-40 hover:bg-muted transition-colors"
                 >
                   Next
-                </button>
+                </Button>
               </div>
             )}
           </>

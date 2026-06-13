@@ -1,6 +1,13 @@
 import { type LibraryEntry, type MediaItem } from "@media-tracker/shared";
 import { cn } from "@/lib/utils";
 import { BookOpen, Tv, Film, Gamepad2, Ticket, BookMarked } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  MorphingDialogImage,
+  MorphingDialogTitle,
+  MorphingDialogSubtitle,
+} from "@/components/motion-primitives/morphing-dialog";
 
 const TYPE_ICONS = {
   movie: Film,
@@ -20,13 +27,11 @@ const TYPE_COLORS: Record<string, string> = {
   manga: "bg-green-950",
 };
 
-const STATUS_STYLES = {
-  planned: "bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200",
-  in_progress:
-    "bg-violet-100 text-violet-800 dark:bg-violet-900 dark:text-violet-200",
-  completed:
-    "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-  dropped: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+const STATUS_VARIANTS = {
+  planned: "secondary",
+  in_progress: "default",
+  completed: "outline",
+  dropped: "destructive",
 } as const;
 
 const STATUS_LABELS = {
@@ -36,7 +41,7 @@ const STATUS_LABELS = {
   dropped: "Dropped",
 } as const;
 
-function progressPercent(entry: LibraryEntry): number | null {
+export function progressPercent(entry: LibraryEntry): number | null {
   const p = entry.progress;
   if (!p) return null;
   switch (p.type) {
@@ -69,22 +74,18 @@ function progressPercent(entry: LibraryEntry): number | null {
 
 interface LibraryCardProps {
   entry: LibraryEntry;
-  selected?: boolean;
-  onClick: () => void;
 }
 
-export function LibraryCard({ entry, selected, onClick }: LibraryCardProps) {
+export function LibraryCard({ entry }: LibraryCardProps) {
   const { mediaItem, status, rating } = entry;
   const Icon = TYPE_ICONS[mediaItem.type] ?? Film;
   const pct = progressPercent(entry);
 
   return (
-    <button
-      onClick={onClick}
+    <div
       className={cn(
-        "group text-left w-full rounded-xl border overflow-hidden transition-all duration-150",
-        "bg-card hover:border-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-        selected ? "border-primary ring-1 ring-primary" : "border-border",
+        "group text-left w-full rounded-xl border border-border overflow-hidden cursor-pointer",
+        "bg-card hover:border-foreground/30 transition-colors",
       )}
     >
       <div
@@ -94,24 +95,21 @@ export function LibraryCard({ entry, selected, onClick }: LibraryCardProps) {
         )}
       >
         {mediaItem.coverUrl ? (
-          <img
+          <MorphingDialogImage
             src={mediaItem.coverUrl}
             alt={mediaItem.name}
             className="absolute inset-0 w-full h-full object-cover"
-            loading="lazy"
           />
         ) : (
           <Icon className="w-10 h-10 text-white/30" />
         )}
 
-        <span
-          className={cn(
-            "absolute top-2 left-2 text-[10px] font-medium px-2 py-0.5 rounded-full",
-            STATUS_STYLES[status],
-          )}
+        <Badge
+          variant={STATUS_VARIANTS[status]}
+          className="absolute top-2 left-2 text-[10px] px-2 py-0.5 rounded-full"
         >
           {STATUS_LABELS[status]}
-        </span>
+        </Badge>
 
         {rating != null && (
           <span className="absolute top-2 right-2 bg-black/60 text-white text-[10px] font-medium px-1.5 py-0.5 rounded-md flex items-center gap-0.5">
@@ -121,15 +119,15 @@ export function LibraryCard({ entry, selected, onClick }: LibraryCardProps) {
       </div>
 
       <div className="px-2.5 pt-2 pb-2.5">
-        <p className="text-xs font-medium text-foreground leading-tight truncate">
+        <MorphingDialogTitle className="text-xs font-medium text-foreground leading-tight truncate">
           {mediaItem.name}
-        </p>
-        <p className="text-[11px] text-muted-foreground mt-0.5 capitalize">
+        </MorphingDialogTitle>
+        <MorphingDialogSubtitle className="text-[11px] text-muted-foreground mt-0.5 capitalize">
           {mediaItem.type}
           {mediaItem.releaseDate
             ? ` · ${mediaItem.releaseDate.slice(0, 4)}`
             : ""}
-        </p>
+        </MorphingDialogSubtitle>
         {pct != null && (
           <div className="mt-1.5 h-0.5 bg-muted rounded-full overflow-hidden">
             <div
@@ -139,7 +137,7 @@ export function LibraryCard({ entry, selected, onClick }: LibraryCardProps) {
           </div>
         )}
       </div>
-    </button>
+    </div>
   );
 }
 
@@ -184,18 +182,15 @@ export function ExploreCard({
         <p className="text-[11px] text-muted-foreground mt-0.5 capitalize mb-2">
           {item.releaseDate?.slice(0, 4) ?? "—"}
         </p>
-        <button
+        <Button
+          size="sm"
           onClick={onAdd}
           disabled={inLibrary || isPending}
-          className={cn(
-            "w-full text-[11px] font-medium py-1.5 rounded-lg transition-colors",
-            inLibrary
-              ? "bg-muted text-muted-foreground cursor-default"
-              : "bg-primary text-primary-foreground hover:bg-primary/90 active:scale-[0.98]",
-          )}
+          variant={inLibrary ? "secondary" : "default"}
+          className="w-full text-[11px] h-7"
         >
           {isPending ? "Adding…" : inLibrary ? "In library" : "+ Add"}
-        </button>
+        </Button>
       </div>
     </div>
   );

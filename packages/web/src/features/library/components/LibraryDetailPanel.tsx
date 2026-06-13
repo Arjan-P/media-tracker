@@ -1,14 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  X,
-  Trash2,
-  BookOpen,
-  Tv,
-  Film,
-  Gamepad2,
-  Ticket,
-  BookMarked,
-} from "lucide-react";
+import { Tv, Film, Gamepad2, BookOpen, Ticket, BookMarked } from "lucide-react";
 import type {
   LibraryEntry,
   MediaStatus,
@@ -16,6 +7,13 @@ import type {
 } from "@media-tracker/shared";
 import { cn } from "@/lib/utils";
 import { useUpdateMedia, useRemoveFromLibrary } from "../hooks/useLibrary";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Separator } from "@/components/ui/separator";
 
 const TYPE_ICONS = {
   movie: Film,
@@ -152,7 +150,8 @@ function progressLabel(type: string): [string, string, string?, string?] {
 
 interface Props {
   entry: LibraryEntry;
-  onClose: () => void;
+  /** Optional — the morphing dialog provides its own close affordance, so this is unused there. */
+  onClose?: () => void;
 }
 
 export function LibraryDetailPanel({ entry, onClose }: Props) {
@@ -212,11 +211,11 @@ export function LibraryDetailPanel({ entry, onClose }: Props) {
   );
 
   return (
-    <aside className="flex flex-col w-72 border-l border-border bg-background overflow-y-auto shrink-0">
+    <div className="flex flex-col w-full bg-background overflow-y-auto max-h-[85vh]">
       {/* Cover */}
       <div
         className={cn(
-          "relative w-full aspect-video flex items-center justify-center shrink-0",
+          "relative w-full aspect-[16/7] flex items-center justify-center shrink-0",
           TYPE_BG[mediaItem.type] ?? "bg-muted",
         )}
       >
@@ -229,19 +228,12 @@ export function LibraryDetailPanel({ entry, onClose }: Props) {
         ) : (
           <Icon className="w-12 h-12 text-white/30" />
         )}
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 p-1 rounded-md bg-black/40 text-white hover:bg-black/60 transition-colors"
-          aria-label="Close detail panel"
-        >
-          <X className="w-4 h-4" />
-        </button>
       </div>
 
-      <div className="flex flex-col gap-5 p-4">
+      <div className="flex flex-col gap-5 p-5">
         {/* Title */}
         <div>
-          <h2 className="text-sm font-medium text-foreground leading-snug">
+          <h2 className="text-base font-medium text-foreground leading-snug">
             {mediaItem.name}
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5 capitalize">
@@ -252,48 +244,56 @@ export function LibraryDetailPanel({ entry, onClose }: Props) {
           </p>
         </div>
 
+        <Separator />
+
         {/* Status */}
-        <div>
-          <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
+        <div className="space-y-2">
+          <Label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
             Status
-          </p>
-          <div className="flex flex-wrap gap-1.5">
+          </Label>
+          <ToggleGroup
+            type="single"
+            value={status}
+            onValueChange={(v) => {
+              if (v) {
+                setStatus(v as MediaStatus);
+                mark();
+              }
+            }}
+            className="justify-start flex-wrap gap-1.5"
+          >
             {STATUSES.map((s) => (
-              <button
+              <ToggleGroupItem
                 key={s.value}
-                onClick={() => {
-                  setStatus(s.value);
-                  mark();
-                }}
-                className={cn(
-                  "text-xs px-2.5 py-1 rounded-full border transition-colors",
-                  status === s.value
-                    ? "bg-foreground text-background border-transparent"
-                    : "border-border text-muted-foreground hover:border-foreground/40",
-                )}
+                value={s.value}
+                className="text-xs px-3 h-7 rounded-full border data-[state=on]:bg-foreground data-[state=on]:text-background"
               >
                 {s.label}
-              </button>
+              </ToggleGroupItem>
             ))}
-          </div>
+          </ToggleGroup>
         </div>
 
         {/* Rating */}
-        <div>
-          <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
+        <div className="space-y-2">
+          <Label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
             Rating
-          </p>
-          <div className="flex gap-0.5" onMouseLeave={() => setHover(0)}>
+          </Label>
+          <div
+            className="flex items-center gap-0.5"
+            onMouseLeave={() => setHover(0)}
+          >
             {Array.from({ length: 10 }, (_, i) => (
               <button
                 key={i}
+                type="button"
                 onMouseEnter={() => setHover(i + 1)}
                 onClick={() => {
                   setRating(i + 1);
                   mark();
                 }}
                 className={cn(
-                  "text-base leading-none transition-colors",
+                  "text-lg leading-none transition-colors",
                   (hover || rating) > i
                     ? "text-amber-400"
                     : "text-muted-foreground/30",
@@ -304,31 +304,33 @@ export function LibraryDetailPanel({ entry, onClose }: Props) {
               </button>
             ))}
             {rating > 0 && (
-              <button
+              <Button
+                variant="link"
+                size="sm"
                 onClick={() => {
                   setRating(0);
                   mark();
                 }}
-                className="ml-1.5 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+                className="ml-1.5 h-auto p-0 text-[11px] text-muted-foreground"
               >
                 Clear
-              </button>
+              </Button>
             )}
           </div>
         </div>
 
         {/* Progress — only for non-movie types */}
         {mediaItem.type !== "movie" && (
-          <div>
-            <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
+          <div className="space-y-2">
+            <Label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
               Progress
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <label className="text-[11px] text-muted-foreground block mb-1">
+            </Label>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label className="text-[11px] text-muted-foreground">
                   {priLabel}
-                </label>
-                <input
+                </Label>
+                <Input
                   type="number"
                   min={0}
                   value={pFields?.cur ?? ""}
@@ -339,15 +341,15 @@ export function LibraryDetailPanel({ entry, onClose }: Props) {
                     }));
                     mark();
                   }}
-                  className="w-full text-sm px-2.5 py-1.5 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                  className="h-9"
                 />
               </div>
               {totLabel && (
-                <div>
-                  <label className="text-[11px] text-muted-foreground block mb-1">
+                <div className="space-y-1">
+                  <Label className="text-[11px] text-muted-foreground">
                     {totLabel}
-                  </label>
-                  <input
+                  </Label>
+                  <Input
                     type="number"
                     min={0}
                     value={pFields?.tot ?? ""}
@@ -358,16 +360,16 @@ export function LibraryDetailPanel({ entry, onClose }: Props) {
                       }));
                       mark();
                     }}
-                    className="w-full text-sm px-2.5 py-1.5 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                    className="h-9"
                   />
                 </div>
               )}
               {sec1Label && (
-                <div>
-                  <label className="text-[11px] text-muted-foreground block mb-1">
+                <div className="space-y-1">
+                  <Label className="text-[11px] text-muted-foreground">
                     {sec1Label}
-                  </label>
-                  <input
+                  </Label>
+                  <Input
                     type="number"
                     min={0}
                     value={pFields?.cur2 ?? ""}
@@ -378,16 +380,16 @@ export function LibraryDetailPanel({ entry, onClose }: Props) {
                       }));
                       mark();
                     }}
-                    className="w-full text-sm px-2.5 py-1.5 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                    className="h-9"
                   />
                 </div>
               )}
               {sec2Label && sec2Label !== "/ 100" && (
-                <div>
-                  <label className="text-[11px] text-muted-foreground block mb-1">
+                <div className="space-y-1">
+                  <Label className="text-[11px] text-muted-foreground">
                     {sec2Label}
-                  </label>
-                  <input
+                  </Label>
+                  <Input
                     type="number"
                     min={0}
                     value={pFields?.tot2 ?? ""}
@@ -398,13 +400,13 @@ export function LibraryDetailPanel({ entry, onClose }: Props) {
                       }));
                       mark();
                     }}
-                    className="w-full text-sm px-2.5 py-1.5 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                    className="h-9"
                   />
                 </div>
               )}
             </div>
             {barPct != null && (
-              <div className="mt-2">
+              <div className="pt-1">
                 <div className="h-1 bg-muted rounded-full overflow-hidden">
                   <div
                     className="h-full bg-primary/70 rounded-full transition-all duration-300"
@@ -420,11 +422,11 @@ export function LibraryDetailPanel({ entry, onClose }: Props) {
         )}
 
         {/* Review */}
-        <div>
-          <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
+        <div className="space-y-2">
+          <Label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
             Review
-          </p>
-          <textarea
+          </Label>
+          <Textarea
             rows={3}
             placeholder="Write your thoughts…"
             value={review}
@@ -432,33 +434,31 @@ export function LibraryDetailPanel({ entry, onClose }: Props) {
               setReview(e.target.value);
               mark();
             }}
-            className="w-full text-sm px-2.5 py-2 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-1 focus:ring-ring leading-relaxed"
+            className="resize-none"
           />
         </div>
 
+        <Separator />
+
         {/* Actions */}
-        <div className="flex flex-col gap-2 pb-2">
-          <button
+        <div className="flex flex-col gap-2">
+          <Button
             onClick={handleSave}
             disabled={!dirty || update.isPending}
-            className={cn(
-              "w-full py-2 rounded-lg text-sm font-medium transition-colors",
-              dirty
-                ? "bg-foreground text-background hover:bg-foreground/90"
-                : "bg-muted text-muted-foreground cursor-default",
-            )}
+            className="w-full"
           >
             {update.isPending ? "Saving…" : "Save changes"}
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleRemove}
             disabled={remove.isPending}
-            className="w-full py-2 rounded-lg text-sm border border-destructive/40 text-destructive hover:bg-destructive/5 transition-colors"
+            variant="outline"
+            className="w-full text-destructive border-destructive/40 hover:bg-destructive/5 hover:text-destructive"
           >
             {remove.isPending ? "Removing…" : "Remove from library"}
-          </button>
+          </Button>
         </div>
       </div>
-    </aside>
+    </div>
   );
 }
