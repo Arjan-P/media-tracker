@@ -5,11 +5,13 @@ import {
   removeFromLibrary,
   MediaUpdateBody,
   updateMedia,
+  getStats,
 } from "../api/library.api";
 import { MediaStatus } from "@media-tracker/shared";
 
 export const libraryKeys = {
   all: ["library"] as const,
+  stats: ["library", "stats"] as const,
   list: (params: object) => ["library", "list", params] as const,
   details: (id: string) => ["library", "details", id] as const,
 };
@@ -22,6 +24,10 @@ export function useLibraryList(params: {
     queryKey: libraryKeys.list(params),
     queryFn: () => listLibrary(params),
   });
+}
+
+export function useLibraryStats() {
+  return useQuery({ queryKey: libraryKeys.stats, queryFn: getStats });
 }
 
 export function useLibraryItem(id: string) {

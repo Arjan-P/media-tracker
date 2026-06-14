@@ -9,6 +9,7 @@ import {
 import { requireUserId } from "../../utils/auth.js";
 import { ok, paginated } from "../../utils/response.js";
 import { NotFoundError } from "../../errors/http.errors.js";
+import { ActivityType } from "@media-tracker/shared";
 
 export class LibraryController {
   private readonly service: LibraryService;
@@ -25,6 +26,12 @@ export class LibraryController {
     const item = await this.service.addMedia(userId, request.body);
     const response = ok(item);
     return reply.status(201).send(response);
+  }
+
+  async stats(request: FastifyRequest) {
+    const userId = requireUserId(request);
+    const result = await this.service.getStats(userId);
+    return ok(result);
   }
 
   async updateMedia(

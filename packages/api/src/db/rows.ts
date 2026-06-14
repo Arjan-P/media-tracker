@@ -1,4 +1,5 @@
 import type {
+  ActivityType,
   MediaProviderType,
   MediaStatus,
   MediaType,
@@ -90,6 +91,23 @@ export type MediaProgress =
   | ({ type: "game" } & GameProgress)
   | ({ type: "anime" } & AnimeProgress)
   | ({ type: "manga" } & MangaProgress);
+
+export interface ActivityLogRow {
+  id: string;
+  user_id: string;
+  media_item_id: string;
+  user_media_id: string;
+  type: ActivityType;
+  data: Record<string, unknown>;
+  created_at: Date;
+}
+
+export interface ActivityLogFullRow extends ActivityLogRow {
+  // all fields nullable since media item can be null after delete
+  media_name: string | null;
+  media_cover_url: string | null;
+  media_type: MediaType | null;
+}
 
 export interface UserMediaFullRow extends UserMediaRow {
   provider: MediaProviderType;

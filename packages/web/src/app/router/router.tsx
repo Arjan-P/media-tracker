@@ -8,7 +8,8 @@ import { AppLayout } from "../layouts/AppLayout";
 import { LoginPage, SignupPage } from "@/features/auth";
 import { ROUTES } from "./routes";
 import { ExplorePage } from "@/features/explore";
-import { LibraryDetailPage, LibraryPage } from "@/features/library";
+import { LibraryPage } from "@/features/library";
+import { HomePage } from "@/features/home";
 
 export const router = createBrowserRouter([
   {
@@ -37,8 +38,8 @@ export const router = createBrowserRouter([
           {
             element: <ProtectedLayout />,
             children: [
+              { path: "home", element: <HomePage /> },
               { path: "library", element: <LibraryPage /> },
-              { path: "library/:id", element: <LibraryDetailPage /> },
             ],
           },
         ],

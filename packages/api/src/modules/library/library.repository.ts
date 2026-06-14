@@ -1,7 +1,9 @@
 import type { PostgresDb } from "@fastify/postgres";
 import type { MediaItemRow, UserMediaFullRow } from "../../db/rows.js";
-import { Progress } from "@media-tracker/shared";
+import { ActivityType, Progress } from "@media-tracker/shared";
 import { UpdateMediaBodyType } from "./library.schema.js";
+import { ActivityRepository } from "../activity/activity.repository.js";
+import { before } from "node:test";
 
 const USER_MEDIA_SELECT = `
   SELECT
@@ -82,7 +84,10 @@ const USER_MEDIA_SELECT = `
 `;
 
 export class LibraryRepository {
-  constructor(private readonly db: PostgresDb) {}
+  private readonly activity: ActivityRepository;
+  constructor(private readonly db: PostgresDb) {
+    this.activity = new ActivityRepository(db);
+  }
 
   async upsertMediaItem(
     data: Omit<MediaItemRow, "id" | "created_at">,
@@ -129,7 +134,37 @@ export class LibraryRepository {
       return null;
     }
 
+    // add activity log row
+    await this.activity.record(userId, "added", {}, mediaItemId, userMediaId);
     return this.findOne(userMediaId, userId);
+  }
+
+  async getStatusCounts(userId: string): Promise<Record<string, number>> {
+    const result = await this.db.query<{ status: string; count: string }>(
+      `
+        SELECT status, COUNT(*) as count
+        FROM user_media
+        WHERE user_id = $1
+        GROUP BY status
+      `,
+      [userId],
+    );
+    return Object.fromEntries(
+      result.rows.map((r) => [r.status, parseInt(r.count)]),
+    );
+  }
+
+  async getActivityByDay(
+    userId: string,
+    days: number,
+  ): Promise<{ day: string; count: number }[]> {
+    return await this.activity.getActivityByDay(userId, days);
+  }
+
+  async getActivityHeatmap(
+    userId: string,
+  ): Promise<{ day: string; count: number }[]> {
+    return await this.activity.getActivityHeatmap(userId);
   }
 
   async updateMedia(
@@ -137,6 +172,8 @@ export class LibraryRepository {
     userId: string,
     data: UpdateMediaBodyType,
   ): Promise<UserMediaFullRow | null> {
+    const existing = await this.findOne(id, userId);
+    if (!existing) return null;
     // Build the SET clause dynamically — only touch columns that were provided
     const sets: string[] = ["updated_at = now()"];
     const params: unknown[] = [];
@@ -180,9 +217,42 @@ export class LibraryRepository {
 
     if (!result.rows[0]) return null;
 
-    // Handle progress upsert after the user_media update
+    if (data.status !== undefined && data.status !== existing.status) {
+      await this.activity.record(
+        userId,
+        "status_changed",
+        { from: existing.status, to: data.status },
+        existing.media_item_id,
+        id,
+      );
+    }
+    if (data.rating !== undefined) {
+      await this.activity.record(
+        userId,
+        "rated",
+        { rating: data.rating },
+        existing.media_item_id,
+        id,
+      );
+    }
+    if (data.review !== undefined) {
+      await this.activity.record(
+        userId,
+        "reviewed",
+        {},
+        existing.media_item_id,
+        id,
+      );
+    }
     if (data.progress !== undefined) {
       await this.upsertProgress(id, data.progress);
+      await this.activity.record(
+        userId,
+        "progress_updated",
+        { progress: data.progress },
+        existing.media_item_id,
+        id,
+      );
     }
 
     return this.findOne(id, userId);
@@ -315,11 +385,24 @@ export class LibraryRepository {
   }
 
   async remove(id: string, userId: string): Promise<boolean> {
+    const existing = await this.findOne(id, userId);
+    if (!existing) return false;
+
     const result = await this.db.query(
       `DELETE FROM user_media WHERE id = $1 AND user_id = $2`,
       [id, userId],
     );
 
-    return (result.rowCount ?? 0) > 0;
+    const deleted = (result.rowCount ?? 0) > 0;
+    if (deleted) {
+      await this.activity.record(
+        userId,
+        "removed",
+        { name: existing.name },
+        existing.media_item_id,
+        null,
+      );
+    }
+    return deleted;
   }
 }

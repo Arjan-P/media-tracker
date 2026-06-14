@@ -2,6 +2,7 @@ import { FastifyPluginAsync } from "fastify";
 import { authRoutes } from "../modules/auth/auth.route.js";
 import { exploreRoutes } from "../modules/explore/explore.route.js";
 import { libraryRoutes } from "../modules/library/library.route.js";
+import { activityRoutes } from "../modules/activity/activity.route.js";
 
 export const routes: FastifyPluginAsync = async (fastify) => {
   fastify.register(authRoutes, { prefix: "/auth" });
@@ -11,6 +12,9 @@ export const routes: FastifyPluginAsync = async (fastify) => {
 
     protectedRoutes.register(libraryRoutes, {
       prefix: "/library",
+    });
+    protectedRoutes.register(activityRoutes, {
+      prefix: "/activity",
     });
   });
 };

@@ -12,6 +12,8 @@ import {
   LibraryEntrySchema,
   successResponse,
   paginatedResponse,
+  statsResponseSchema,
+  activityTypeSchema,
 } from "@media-tracker/shared";
 import { commonErrorResponses } from "../../plugins/error-handler.js";
 
@@ -68,6 +70,22 @@ export async function libraryRoutes(fastify: FastifyInstance) {
       },
     },
     controller.getOne.bind(controller),
+  );
+
+  app.get(
+    "/stats",
+    {
+      preHandler: [app.authenticate],
+      schema: {
+        tags: ["Library"],
+        security: [{ bearerAuth: [] }],
+        response: {
+          200: successResponse(statsResponseSchema),
+          ...commonErrorResponses,
+        },
+      },
+    },
+    controller.stats.bind(controller),
   );
 
   app.patch(

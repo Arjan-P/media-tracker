@@ -6,7 +6,11 @@ import type {
   UpdateMediaBodyType,
 } from "./library.schema.js";
 import type { MediaProgress, UserMediaFullRow } from "../../db/rows.js";
-import type { LibraryEntry, Progress } from "@media-tracker/shared";
+import type {
+  ActivityType,
+  LibraryEntry,
+  Progress,
+} from "@media-tracker/shared";
 
 export function progressRowToDto(
   progress: MediaProgress | null,
@@ -124,6 +128,31 @@ export class LibraryService {
       throw new Error();
     }
     return toLibraryEntry(row);
+  }
+
+  async getStats(userId: string) {
+    const [statusCounts, activity, heatmap] = await Promise.all([
+      this.repo.getStatusCounts(userId),
+      this.repo.getActivityByDay(userId, 14),
+      this.repo.getActivityHeatmap(userId),
+    ]);
+    const statuses = [
+      "planned",
+      "in_progress",
+      "completed",
+      "dropped",
+    ] as const;
+    const total = statuses.reduce((sum, s) => sum + (statusCounts[s] ?? 0), 0);
+
+    return {
+      statusCounts: statuses.map((s) => ({
+        status: s,
+        count: statusCounts[s] ?? 0,
+      })),
+      total,
+      activityByDay: activity,
+      heatmap,
+    };
   }
 
   async updateMedia(

@@ -3,6 +3,7 @@ import type {
   LibraryEntry,
   MediaItem,
   MediaStatus,
+  StatsResponse,
   PaginatedResponse,
   Progress,
   SuccessResponse,
@@ -20,6 +21,12 @@ export async function addMedia(item: MediaItem) {
     "/api/library",
     item,
   );
+  return res.data.data;
+}
+
+export async function getStats() {
+  const res =
+    await api.get<SuccessResponse<StatsResponse>>("/api/library/stats");
   return res.data.data;
 }
 
