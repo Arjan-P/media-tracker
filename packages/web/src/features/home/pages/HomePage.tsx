@@ -61,30 +61,9 @@ function activityLabel(entry: {
 }
 
 export function HomePage() {
-  const { data: stats, isLoading: statsLoading } = useLibraryStats();
   const { data: activity, isLoading: activityLoading } = useActivityFeed({
     limit: 10,
   });
-
-  const ringData = useMemo(() => {
-    if (!stats) return [];
-    return stats.statusCounts
-      .filter((s) => s.count > 0)
-      .map((s) => ({
-        label: STATUS_LABELS[s.status],
-        value: s.count,
-        maxValue: stats.total,
-        color: STATUS_COLORS[s.status],
-      }));
-  }, [stats]);
-
-  const barData = useMemo(() => {
-    if (!stats) return [];
-    return stats.activityByDay.map((d) => ({
-      day: format(parseISO(d.day), "EEE"),
-      activity: d.count,
-    }));
-  }, [stats]);
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-6 overflow-y-auto h-full">
@@ -97,7 +76,7 @@ export function HomePage() {
           <CardTitle>Activity</CardTitle>
         </CardHeader>
 
-        <CardContent>
+        <CardContent className="overflow-x-auto">
           <ActivityHeatmap />
         </CardContent>
       </Card>

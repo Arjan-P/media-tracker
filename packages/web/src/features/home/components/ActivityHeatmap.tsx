@@ -32,14 +32,14 @@ export function ActivityHeatmap() {
   return (
     <HeatmapInteractionProvider>
       <HeatmapInteractionBoundary>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 min-w-[700px]">
           <HeatmapChart
             className="w-full"
             data={heatmapData}
             layout="fluid"
             levelStyles={LEVEL_STYLES}
             sizingColumnCount={53}
-            gap={3}
+            gap={1}
             status={isLoading ? "loading" : "ready"}
             loadingLabel="Loading activity…"
           >
