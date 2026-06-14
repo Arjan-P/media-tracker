@@ -17,14 +17,30 @@ api.interceptors.request.use((config) => {
 });
 
 api.interceptors.response.use(
-  // success handler
   (res) => res,
-  // error handler
   (error: AxiosError) => {
+    if (error.response?.status === 401) {
+      useAuthStore.getState().logout();
+
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login";
+      }
+
+      return Promise.reject({
+        code: "UNAUTHORIZED",
+        message: "Session expired",
+      });
+    }
+
     const parsed = errorResponse.safeParse(error.response?.data);
+
     if (parsed.success) {
       return Promise.reject(parsed.data.error);
     }
-    return Promise.reject({ code: "UNKNOWN", message: "Something went wrong" });
+
+    return Promise.reject({
+      code: "UNKNOWN",
+      message: "Something went wrong",
+    });
   },
 );
