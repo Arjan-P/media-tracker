@@ -22,7 +22,7 @@ import { ROUTES } from "@/app/router/routes";
 
 const data: NavMainProps = {
   navMain: [
-    { title: "Home", url: ROUTES.HOME, icon: HomeIcon, items: [] },
+    { title: "Home", url: "/home", icon: HomeIcon, items: [] },
     {
       title: "Explore",
       url: ROUTES.EXPLORE_MOVIES,

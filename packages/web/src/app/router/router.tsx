@@ -13,7 +13,7 @@ import { HomePage } from "@/features/home";
 
 export const router = createBrowserRouter([
   {
-    path: ROUTES.HOME,
+    path: "/",
     element: <RootLayout />,
     children: [
       // Public auth pages

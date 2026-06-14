@@ -6,7 +6,7 @@ import { LoginForm } from "../components/LoginForm";
 export function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const from = (location.state as any)?.from ?? ROUTES.LIBRARY;
+  const from = (location.state as any)?.from ?? ROUTES.HOME;
   const loginMutation = useLogin();
 
   function handleLogin(data: { email: string; password: string }) {

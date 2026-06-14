@@ -1,6 +1,4 @@
-// src/features/auth/pages/SignupPage.tsx
-
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { ROUTES } from "@/app/router/routes";
 import { SignupForm } from "../components/SignupForm";
@@ -8,6 +6,8 @@ import { useSignup } from "../hooks/useSignup";
 
 export function SignupPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = (location.state as any)?.from ?? ROUTES.HOME;
   const signupMutation = useSignup();
 
   function handleSignup(data: {
@@ -30,9 +30,7 @@ export function SignupPage() {
         password: data.password,
       },
       {
-        onSuccess: () => {
-          navigate(ROUTES.HOME, { replace: true });
-        },
+        onSuccess: () => navigate(from, { replace: true }),
       },
     );
   }
